@@ -25,27 +25,13 @@ bool PauseLayer::init()
     do {
         CC_BREAK_IF(!LayerColor::initWithColor(Color4B(255, 255, 255, 250)));
         ret = true;
-        setupButton();
         
-        /*
+        auto back = Sprite::create("UI/pause_bk.png");
+        addChild(back);
         auto s = Director::getInstance()->getWinSize();
-        SpriteFrameCache::getInstance()->addSpriteFramesWithFile("animations/seamaid.plist","animations/seamaid.png");
-        Sprite* plistSprite = Sprite::createWithSpriteFrameName("fish12_catch_01.png");
-        Vector<SpriteFrame*> cc;
-        char name[20];
-        for(int i=0; i<4; i++)
-        {
-            sprintf(name,"fish11_catch_0%d.png",i+1);
-            SpriteFrame* frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(name);
-            cc.pushBack(frame);
-        }
+        back->setPosition(Point(s.width/2,s.height/2));
         
-        Animation* plistAnimation = Animation::createWithSpriteFrames(cc,0.15f);
-        Animate* plistAnimate = Animate::create(plistAnimation);
-        plistSprite->runAction(CCRepeatForever::create(plistAnimate));
-        addChild(plistSprite);
-        plistSprite->setPosition(Point(s.width/2,s.height/2));*/
-        
+        setupButton(back);
     } while (0);
     
     return ret;
@@ -54,10 +40,10 @@ bool PauseLayer::init()
 void PauseLayer::onEnter()
 {
     LayerColor::onEnter();
-    // Register Touch Event
+    
+    //Register Touch Event
     auto listener = EventListenerTouchOneByOne::create();
     listener->setSwallowTouches(true);
-    
     listener->onTouchBegan = CC_CALLBACK_2(PauseLayer::onTouchBegan, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
@@ -72,19 +58,12 @@ bool PauseLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     return true;
 }
 
-Scene *PauseLayer::scene(RenderTexture* sqr, bool isFlip)
+Scene *PauseLayer::scene()
 {
 	Scene *sc = NULL;
 	do{
 		sc = Scene::create();
 		CC_BREAK_IF(!sc);
-        
-		/*Size size = Director::getInstance()->getWinSize();
-		Sprite *_spr = Sprite::createWithTexture(sqr->getSprite()->getTexture());
-		_spr->setPosition(Point(size.width/2, size.height/2));
-		_spr->setFlippedY(true);
-		_spr->setColor(Color3B::GRAY);
-		sc->addChild(_spr);*/
         
 		PauseLayer *layer = PauseLayer::create();
 		CC_BREAK_IF(!layer);
@@ -94,7 +73,7 @@ Scene *PauseLayer::scene(RenderTexture* sqr, bool isFlip)
 	return sc;
 }
 
-void PauseLayer::setupButton()
+void PauseLayer::setupButton(Sprite* parent)
 {
     const char* normal = "backtotopnormal.png";
     const char* pressed  = "backtotoppressed.png";
@@ -102,7 +81,7 @@ void PauseLayer::setupButton()
     //restart btn
     Button *restart_btn = AnimationUtil::createButton(normal, pressed);
     restart_btn->addTouchEventListener(this, toucheventselector(PauseLayer::restartEvent));
-    addChild(restart_btn);
+    parent->addChild(restart_btn);
     
     Label* restart_label = AnimationUtil::createLabel("fonts/arial.ttf", 30);
     restart_label->setString("restartGame");
@@ -112,7 +91,7 @@ void PauseLayer::setupButton()
     //continue btn
     Button* continue_btn =AnimationUtil::createButton(normal, pressed);
     continue_btn->addTouchEventListener(this, toucheventselector(PauseLayer::continueEvent));
-    addChild(continue_btn);
+    parent->addChild(continue_btn);
     
     Label* continue_label = AnimationUtil::createLabel("fonts/arial.ttf", 30);
     continue_label->setString("continueGame");
@@ -122,7 +101,7 @@ void PauseLayer::setupButton()
     //back to mainMenu
     Button* backto_btn = AnimationUtil::createButton(normal, pressed);
     backto_btn->addTouchEventListener(this, toucheventselector(PauseLayer::backtoMainMenuEvent));
-    addChild(backto_btn);
+    parent->addChild(backto_btn);
     
     Label* backto_label = AnimationUtil::createLabel("fonts/arial.ttf", 30);
     backto_label->setString("backToMainMenu");
@@ -130,7 +109,8 @@ void PauseLayer::setupButton()
     backto_label->setPosition(Point(backto_btn->getContentSize().width/2, backto_btn->getContentSize().height/2));
 
     
-    auto s = Director::getInstance()->getWinSize();
+    auto s = parent->getContentSize();
+    
     restart_btn->setPosition(Point(s.width/2, s.height*0.7));
     
     continue_btn->setPosition(Point(s.width/2,

@@ -33,6 +33,9 @@ void ShaderSprite::setBackgroundNotification()
 void ShaderSprite::initShader()
 {
     GLchar * fragSource = (GLchar*) String::createWithContentsOfFile(FileUtils::getInstance()->fullPathForFilename(_fragSourceFile).c_str())->getCString();
+    
+    CCLOG("fragSource:%s\n", fragSource);
+    
     auto program = new GLProgram();
     program->initWithVertexShaderByteArray(ccPositionTextureColor_vert, fragSource);
     setShaderProgram(program);
@@ -117,7 +120,7 @@ void GreyScaleSprite::setCustomUniforms()
 /////////////////blur sprite
 BlurSprite::BlurSprite()
 {
-    _fragSourceFile = "Shaders/example_Blur.fsh";
+    _fragSourceFile = "shader/example_Blur.fsh";
 }
 
 void BlurSprite::buildCustomUniforms()

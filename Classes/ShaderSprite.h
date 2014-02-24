@@ -77,7 +77,6 @@ protected:
 protected:
     Point blur_;
     GLfloat    sub_[4];
-    
     GLuint    blurLocation;
     GLuint    subLocation;
 };

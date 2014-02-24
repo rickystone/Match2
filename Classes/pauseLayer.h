@@ -27,9 +27,10 @@ public:
     //implement the "static create()" method manually
     CREATE_FUNC(PauseLayer);
     
-    static Scene* scene(RenderTexture* sqr,bool isFlip);
+    static Scene* scene();
     
-    void setupButton();
+    void setupButton(Sprite* parent);
+    
     void restartEvent(cocos2d::Object *pSender, TouchEventType type);
     void continueEvent(cocos2d::Object *pSender, TouchEventType type);
     void backtoMainMenuEvent(cocos2d::Object *pSender, TouchEventType type);
