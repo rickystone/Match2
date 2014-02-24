@@ -20,7 +20,10 @@ coreMatch::coreMatch()
   _bShowTip(false),
   _continueAddTime(0),
   _continueTimes(0),
+  _kRenderTextureCount(6),
+  _currentRenderTextureIndex(0),
   _monster_Pos(-1, -1)
+
 {}
 
 coreMatch::~coreMatch() {}
@@ -42,10 +45,11 @@ bool coreMatch::init()
             _rcSprites[r][c] = nullptr;
         }
     }
+    
+    setupMotionBlur();
     setBkGround();
     createBoxes();
     scheduleUpdate();
-    
     return true;
 }
 
@@ -65,11 +69,11 @@ void coreMatch::setBkGround()
     SpriteFrameCache* cache = SpriteFrameCache::getInstance();
     cache->addSpriteFramesWithFile("matchBox/item.plist", "matchBox/item.png");
     _batchnode = SpriteBatchNode::create("matchBox/item.png");
-    this->addChild(_batchnode,0,kBatchNode);
+    this->addChild(_batchnode,0,10);
     
     auto sprite = Sprite::createWithSpriteFrameName("s_fanqie.png");
     auto size = sprite->getContentSize();
-    _batchnode->setPosition(Point(0,size.height));
+    _batchnode->setPosition(Point(0,0));
 }
 
 void coreMatch::createItemBox(int r, int c)
@@ -222,11 +226,6 @@ void coreMatch::createBoxes()
 
 void coreMatch::randomColor(colorSpriteEnum& randomEnum, std::string& spriteFrameFileName)
 {
-    
-    randomEnum = kA;
-    spriteFrameFileName = "s_fanqie_b.png";
-    return;
-    
     int idc = CCRANDOM_0_1()*5+1;
     switch (idc) {
         case 1:
@@ -522,40 +521,11 @@ void coreMatch::boxDeadEffect(const std::vector<coord>& collections)
     }
 }
 
+
 void coreMatch::moveBoxes()
 {
-    //for(int c=0; c<COL; c++)
-        moveRowBoxes(0);
-}
-
-void coreMatch::moveRowBoxes(int c)
-{
-    Vector<FiniteTimeAction*> shitVec;
-    
-    Vector<Sprite*> runSprites;
-    Vector<FiniteTimeAction*> runActions;
-    
-    for(int r=0; r<ROW; r++)
-        moveOneBox(runSprites, runActions, c);
-    
-    for(int i=0; i<runSprites.size(); i++)
-    {
-        Sprite* sp = runSprites.at(i);
-        auto move = runActions.at(i);
-        auto del = DelayTime::create(i*MOVEDURATION);
-        auto seq = Sequence::create(del,move,NULL);
-        sp->runAction(seq);
-    }
-    
-    //float duration = runActions.size()*MOVEDURATION;
-    runActions.clear();
-    runSprites.clear();
-    
-    ///shitVec.pushBack(DelayTime::create(duration));
-    
-    shitVec.pushBack(CallFunc::create(std::bind(&coreMatch::bornNewBox, this, c)));
-    auto seq = Sequence::create(shitVec);
-    this->runAction(seq);
+    for(int c=0; c<COL; c++)
+        moveRowBoxes(c);
 }
 
 void coreMatch::moveOneBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*>& runActions, int c)
@@ -593,70 +563,103 @@ void coreMatch::moveOneBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*
     _rcSprites[r][c] = nullptr;
 }
 
-void coreMatch::bornNewBox(int c)
+
+void coreMatch::moveRowBoxes(int c)
 {
+    Vector<Sprite*> runSprites;
+    Vector<FiniteTimeAction*> runActions;
+    Vector<FiniteTimeAction*> shitVec;
+
+    float stepDuration = 1.0f*MOVEDURATION/4;
+
+    for(int r=0; r<ROW; r++)
+        moveOneBox(runSprites, runActions, c);
+    
+    boxCollectionSeqeunceMove(shitVec, runSprites,runActions);
+    runActions.clear();
+    runSprites.clear();
+    
+    //idle for one step duration
+    shitVec.pushBack(DelayTime::create(stepDuration));
+    
+    
+    //born new box and make it move down
     int cnt = 0;
     for(int r=0; r<ROW; r++)
     {
         if(_rc[r][c] == kUnSigned)
             cnt += 1;
     }
-    
-    Vector<FiniteTimeAction*> shitVec;
     for(int i=0, r=ROW-cnt; r<ROW; r++, i++)
     {
-        auto del = DelayTime::create(i*MOVEDURATION/2);
-        auto fucknew = CallFunc::create( std::bind(&coreMatch::fucknewBox, this, r, c));
-        shitVec.pushBack(del);
-        shitVec.pushBack(fucknew);
+        fucknewBox(runSprites, runActions, r, c);
     }
+
+    //make new born box move action
+    boxCollectionSeqeunceMove(shitVec, runSprites,runActions);
+    runActions.clear();
+    runSprites.clear();
+    
     
     auto seq = Sequence::create(shitVec);
-    if(seq)
-      this->runAction(seq);
+    this->runAction(seq);
 }
 
-void coreMatch::fucknewBox(int r, int c)
+void coreMatch::fucknewBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*>& runActions, int r, int c)
 {
     Point pt = _boxesPos[r][c];
     colorSpriteEnum randomEnum;
     std::string spriteFrameFileName = "";
     randomColor(randomEnum,spriteFrameFileName);
     
-    /*
     auto sprite = Sprite::createWithSpriteFrameName(spriteFrameFileName.c_str());
-
     sprite->setTag(r*ROW+c);
     _rcSprites[r][c] = sprite;
     _rc[r][c] = randomEnum;
     
     sprite->setPosition(Point(pt.x, pt.y+600));
     auto action = moveAction(MOVEDURATION, pt);
-    sprite->runAction(action);
+    
+    runSprites.pushBack(sprite);
+    runActions.pushBack(action);
+    
     _batchnode->addChild(sprite);
-    */
-    
-    //blur sprite
-    std::string filename = "matchBox/";
-    filename += spriteFrameFileName;
-    
-    BlurSprite* sprite = BlurSprite::createSprite(filename.c_str());
-    sprite->setTag(r*ROW+c);
-    _rcSprites[r][c] = sprite;
-    _rc[r][c] = randomEnum;
-    
-    pt = _batchnode->convertToWorldSpace(pt);
-    sprite->setPosition(Point(pt.x, pt.y+600));
-    auto action = moveAction(MOVEDURATION, pt);
-    sprite->runAction(action);
-    addChild(sprite);
 }
 
 cocos2d::ActionInterval* coreMatch::moveAction(float duration, Point pt)
 {
     MoveTo* move = MoveTo::create(duration, pt);
+    return move;
+    
     auto move_ease_inout = EaseBounceOut::create(move);
     return move_ease_inout;
+}
+
+void coreMatch::boxMove(Sprite* box, FiniteTimeAction* moveAction)
+{
+    box->runAction(moveAction);
+}
+
+
+void coreMatch::boxCollectionSeqeunceMove(Vector<FiniteTimeAction*>& shitVec,
+                                          const Vector<Sprite*>& sprites,
+                                          const Vector<FiniteTimeAction*>& actions)
+{
+    float stepDuration = 1.0f*MOVEDURATION/4;
+    for(int i=0; i<sprites.size(); i++)
+    {
+        auto sp = sprites.at(i);
+        auto move = actions.at(i);
+        
+        //i do not know why must have add retain
+        move->retain();
+        
+        auto del = DelayTime::create(stepDuration);
+        auto func = CallFunc::create(std::bind(&coreMatch::boxMove,this, sp, move));
+        shitVec.pushBack(del);
+        shitVec.pushBack(func);
+    }
+    return;
 }
 
 void coreMatch::clearMatchTips()
@@ -965,39 +968,36 @@ void coreMatch::quitCrazyStatus()
 
 void coreMatch::createShowTipParticl(int r, int c)
 {
-    /*auto emitter = ParticleExplosion::create();
-    addChild(emitter,10);
-    emitter->setTexture( Director::getInstance()->getTextureCache()->addImage("stars.png") );
-    emitter->setAutoRemoveOnFinish(false);
-    emitter->setTotalParticles(200);
-    emitter->setDuration(1000);
-    Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-    emitter->setPosition(pt);
-    return emitter;*/
-    
-    /*
-    //add animation
-    Animation* animation = Animation::create();
-    animation->addSpriteFrameWithFile("card/attack_1.png");
-    animation->addSpriteFrameWithFile("card/attack_2.png");
-    animation->addSpriteFrameWithFile("card/attack_3.png");
-    animation->addSpriteFrameWithFile("card/attack_4.png");
-    animation->addSpriteFrameWithFile("card/attack_5.png");
-    animation->addSpriteFrameWithFile("card/attack_6.png");
-    animation->addSpriteFrameWithFile("card/attack_7.png");
+}
 
-    //should last 2.8 seconds. And there are 14 frames.
-    animation->setDelayPerUnit(0.4f/7.0);
-    animation->setRestoreOriginalFrame(true);
-    Animate* action = Animate::create(animation);
+void coreMatch::setupMotionBlur()
+{
+    auto s = Director::getInstance()->getWinSize();
+    _renderTextures.reserve(_kRenderTextureCount);
     
-    auto sprite = Sprite::create("card/attack_1.png");
-    addChild(sprite);
-    sprite->runAction(RepeatForever::create(action));
-    
-    Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-    sprite->setPosition(pt);
-    sprite->setScale(0.5f);*/
+    for(int i=0; i<_kRenderTextureCount; i++)
+    {
+        RenderTexture *rtx = RenderTexture::create((int)s.width, (int)s.height);
+        rtx->setPosition(Point(s.width/2,s.height/2));
+        
+        Sprite* renderSprite = Sprite::createWithTexture(rtx->getSprite()->getTexture());
+        renderSprite->setPosition(rtx->getPosition());
+        
+        this->addChild(renderSprite,100+i);
+        rtx->setUserData(renderSprite);
+        
+        _renderTextures.pushBack(rtx);
+    }
+}
+
+
+void coreMatch::selectNextRenderTexture()
+{
+    _currentRenderTextureIndex++;
+    if (_currentRenderTextureIndex >= _kRenderTextureCount)
+    {
+           _currentRenderTextureIndex = 0;
+    }
 }
 
 void coreMatch::update(float delta)
@@ -1032,6 +1032,41 @@ void coreMatch::update(float delta)
         {
             quitCrazyStatus();
         }
+    }
+}
+
+void coreMatch::visit()
+{
+    RenderTexture* rtx = _renderTextures.at(_currentRenderTextureIndex);
+    rtx->beginWithClear(0, 0, 0, 0);
+    for( const auto &child: _children){
+        if(child->getTag() == 10)
+            child->visit();
+    }
+    rtx->end();
+    
+    // reorder the render textures so that the
+    // most recently rendered texture is drawn last
+    this->selectNextRenderTexture();
+    int index = _currentRenderTextureIndex;
+    for (int i = 0; i < _kRenderTextureCount; i++){
+        
+            RenderTexture* rtx = _renderTextures.at(index);
+            Sprite* renderSprite = (Sprite*)rtx->getUserData();
+            renderSprite->setOpacity((255.0f / _kRenderTextureCount) * (i + 1));
+            renderSprite->setScaleY(-1);
+            this->reorderChild(renderSprite, 100+i);
+            this->selectNextRenderTexture();
+        
+            index++;
+            if (index >= _kRenderTextureCount) {
+                    index = 0;
+            }
+    }
+    
+    for( const auto &child: _children){
+        if(child->getTag() != 10)
+            child->visit();
     }
 }
 

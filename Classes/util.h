@@ -17,7 +17,7 @@
 
 #define CRAZTBURNTIME 5
 
-#define MOVEDURATION  0.07
+#define MOVEDURATION  0.1
 #define PARTICLEDURATION 0.2
 
 #define random_range(low,high) (arc4random()%(high-low+1))+low

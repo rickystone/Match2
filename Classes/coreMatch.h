@@ -25,6 +25,13 @@ public:
     bool init();
     
     void onTouch(Touch* touch);
+    
+    
+    /**
+     * Visits this node's children and draw them recursively.
+     */
+    virtual void visit();
+
 private:
     
     //update grey sprite, show tip match boxes, and compute progress timebar and engergy bar
@@ -65,12 +72,14 @@ private:
     void moveOneBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*>& runActions, int c);
     
     void moveRowBoxes(int c);
-    
-    void bornNewBox(int c);
-    
-    void fucknewBox(int r, int c);
+        
+    void fucknewBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*>& runActions, int r, int c);
     
     cocos2d::ActionInterval* moveAction(float duration, Point pt);
+    
+    void boxCollectionSeqeunceMove(Vector<FiniteTimeAction*>& shitVec,
+                                   const Vector<Sprite*>& sprites,
+                                   const Vector<FiniteTimeAction*>& actions);
     
     void clearMatchTips();
     
@@ -99,6 +108,12 @@ private:
     void quitCrazyStatus();
     
     void createShowTipParticl(int r, int c);
+    
+    void setupMotionBlur();
+    
+    void selectNextRenderTexture();
+    
+    void boxMove(Sprite* box, FiniteTimeAction* moveAction);
     
     CC_SYNTHESIZE(Point, _monster_Pos, monster_Pos)
     
@@ -131,5 +146,12 @@ private:
     
     float _continueAddTime;
     int   _continueTimes;
+    
+    //motion blur
+    int _kRenderTextureCount;
+    int _currentRenderTextureIndex;
+    Vector<RenderTexture*> _renderTextures;
+
+
 };
 #endif
