@@ -403,6 +403,8 @@
 		F228F59818B5F74E00A8B288 /* effect */ = {isa = PBXFileReference; lastKnownFileType = folder; path = effect; sourceTree = "<group>"; };
 		F22AE2EA18B9B16200AC0912 /* Sound */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sound; sourceTree = "<group>"; };
 		F22AE2F418BA1E2A00AC0912 /* stars.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stars.png; sourceTree = "<group>"; };
+		F22AE2FD18BB4F8000AC0912 /* ccShader_flash_frag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ccShader_flash_frag.h; path = ../Classes/ccShader_flash_frag.h; sourceTree = "<group>"; };
+		F22AE2FE18BB4F8000AC0912 /* ccShader_flash_vert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ccShader_flash_vert.h; path = ../Classes/ccShader_flash_vert.h; sourceTree = "<group>"; };
 		F235F83F18B0ABD200D36D5F /* Attack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Attack.h; path = ../Classes/Attack.h; sourceTree = "<group>"; };
 		F235F84018B0ABDC00D36D5F /* Attack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Attack.cpp; path = ../Classes/Attack.cpp; sourceTree = "<group>"; };
 		F235F84D18B1B7C300D36D5F /* card */ = {isa = PBXFileReference; lastKnownFileType = folder; path = card; sourceTree = "<group>"; };
@@ -487,6 +489,8 @@
 		15AA9C4015B7EC450033D6C2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				F22AE2FD18BB4F8000AC0912 /* ccShader_flash_frag.h */,
+				F22AE2FE18BB4F8000AC0912 /* ccShader_flash_vert.h */,
 				8197BA3818A7493000792709 /* PopupLayer.cpp */,
 				8197BA3918A7493000792709 /* PopupLayer.h */,
 				81B24AFA18A35071001C6FEE /* AppDelegate.cpp */,

@@ -73,7 +73,7 @@ void coreMatch::setBkGround()
     
     auto sprite = Sprite::createWithSpriteFrameName("s_fanqie.png");
     auto size = sprite->getContentSize();
-    _batchnode->setPosition(Point(0,0));
+    _batchnode->setPosition(Point(s.width/2 - size.width*ROW/2,size.height*2));
 }
 
 void coreMatch::createItemBox(int r, int c)
@@ -301,6 +301,7 @@ void coreMatch::setupGraySprite(int r, int c)
     }
     
     GreyScaleSprite *ss = GreyScaleSprite::createSprite(s_open.c_str());
+    ss->setScale(0.5f);
     ss->setPosition(pt);
     this->addChild(ss);
     ss->setTag(r*ROW+c);
@@ -401,7 +402,7 @@ void coreMatch::touchOneBox(cocos2d::Touch *touch)
                         auto attackMonster = CallFunc::create( std::bind(&coreMatch::attackMonster, this, collections));
                         auto reset = CallFunc::create( std::bind(&coreMatch::resetCanbeTouch,this));
                         auto sequence = Sequence::create(boxdead,
-                                                         DelayTime::create(0.2f),
+                                                         DelayTime::create(0.05f),
                                                          attackMonster,
                                                          movebox,
                                                          DelayTime::create(MOVEDURATION),
@@ -507,15 +508,21 @@ void coreMatch::boxDeadEffect(const std::vector<coord>& collections)
         int r = co.r;
         int c = co.c;
         
-        auto emitter = ParticleSystemQuad::create("Particles/boomb.plist");
-        emitter->setStartColor(Color4F(1,0,0,1));
-        emitter->setBlendAdditive(false);
-        emitter->setScale(0.5f);
+        auto emitter = ParticleSystemQuad::create("Particles/grapes_splurt.plist");
         addChild(emitter);
-        
         Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
         emitter->setPosition(pt);
-        emitter->setDuration(0.2f);
+        emitter->setScale(0.5f);
+        emitter->setDuration(0.01);
+        
+        //auto emitter = ParticleSystemQuad::create("Particles/boomb.plist");
+        //emitter->setStartColor(Color4F(1,0,0,1));
+        //emitter->setBlendAdditive(false);
+        //emitter->setScale(0.5f);
+        //addChild(emitter);
+        //Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
+        //emitter->setPosition(pt);
+        //emitter->setDuration(0.2f);
         
         //play bomb sound
     }
@@ -617,13 +624,13 @@ void coreMatch::fucknewBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*
     _rcSprites[r][c] = sprite;
     _rc[r][c] = randomEnum;
     
-    sprite->setPosition(Point(pt.x, pt.y+600));
+    sprite->setPosition(Point(pt.x, pt.y+100));
     auto action = moveAction(MOVEDURATION, pt);
     
     runSprites.pushBack(sprite);
     runActions.pushBack(action);
-    
     _batchnode->addChild(sprite);
+    sprite->setVisible(false);
 }
 
 cocos2d::ActionInterval* coreMatch::moveAction(float duration, Point pt)
@@ -637,9 +644,9 @@ cocos2d::ActionInterval* coreMatch::moveAction(float duration, Point pt)
 
 void coreMatch::boxMove(Sprite* box, FiniteTimeAction* moveAction)
 {
+    box->setVisible(true);
     box->runAction(moveAction);
 }
-
 
 void coreMatch::boxCollectionSeqeunceMove(Vector<FiniteTimeAction*>& shitVec,
                                           const Vector<Sprite*>& sprites,
@@ -674,14 +681,14 @@ void coreMatch::clearMatchTips()
 
 void coreMatch::attackMonster(const std::vector<coord>& coords)
 {
-    int index = CCRANDOM_0_1()*(coords.size()-1);
+    /*int index = CCRANDOM_0_1()*(coords.size()-1);
     coord co = coords[index];
     int r = co.r;
     int c = co.c;
     Attack*  att = Attack::create();
     addChild(att);
     Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-    att->shootBullet(r, c, _monster_Pos, pt);
+    att->shootBullet(r, c, _monster_Pos, pt);*/
 }
 
 void coreMatch::randomShowMatchTip()
@@ -702,9 +709,6 @@ void coreMatch::randomShowMatchTip()
                     coord co = collection[i];
                     int r = co.r;
                     int c = co.c;
-                   
-                    //makeBoxSimle(r, c);
-                    //createShowTipParticl(r,c);
                     
                     Sprite* tip = Sprite::create("circle.png");
                     this->addChild(tip);
