@@ -24,13 +24,24 @@
 #define frandom (float)arc4random()/UINT64_C(0x100000000)
 #define frandom_range(low,high) ((high-low)*frandom)+low
 
+#include "cocos2d.h"
+
 enum  colorSpriteEnum{
-    kA,
-    kB,
-    kC,
-    kD,
-    kE,
-    kRabbit,
+    
+    kA,                   //元素A
+    kB,                   //元素B
+    kC,                   //元素C
+    kD,                   //元素D
+    kE,                   //元素E
+    
+    kPropAutoClear,       //自动胶囊
+    kPropBoomb,           //炸弹胶囊
+    kPropSameColorBoomb,  //同色胶囊
+    
+    kPropCorssBoomb,      //十字炸弹
+    kPropRandomBoom,      //随机炸弹
+    kPropFivePlaces,      //5色刷新
+    
     kUnSigned,
 };
 
@@ -73,6 +84,13 @@ typedef struct coord
     }
 } coord;
 
+///show what the box is what kind of box
+static colorSpriteEnum _rc[ROW][COL];
 
+//show box position
+static cocos2d::Point _boxesPos[ROW][COL];
+
+//box house
+static cocos2d::Sprite* _rcSprites[ROW][COL];
 
 #endif

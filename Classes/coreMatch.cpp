@@ -8,6 +8,37 @@
 
 #include "coreMatch.h"
 #include "Attack.h"
+#include "Prop.h"
+#include "matchAlgorithm.h"
+
+
+bool  coordCompare(const coord& n1, const coord& n2)
+{
+    if(n1.r == n2.r)
+    {
+        if(n1.c < n2.c)
+            return true;
+        else
+            return false;
+    }
+    
+    if(n1.c == n2.c)
+    {
+        if(n1.r < n2.r)
+            return true;
+        else
+            return false;
+    }
+    
+    if(n1.r < n2.r)
+        return true;
+    
+    if(n1.c < n2.c)
+        return true;
+    
+    return true;
+}
+
 
 coreMatch::coreMatch()
 : _batchnode(nullptr),
@@ -22,11 +53,16 @@ coreMatch::coreMatch()
   _continueTimes(0),
   _kRenderTextureCount(6),
   _currentRenderTextureIndex(0),
+  _propcount(0),
+  _updatePropTime(0),
+  _bProduceProp(false),
+  _propSequence(0),
   _monster_Pos(-1, -1)
-
 {}
 
-coreMatch::~coreMatch() {}
+coreMatch::~coreMatch()
+{
+}
 
 coreMatch* coreMatch::create()
 {
@@ -47,9 +83,9 @@ bool coreMatch::init()
     }
     
     setupMotionBlur();
-    setBkGround();
+    loadPlist();
     createBoxes();
-    scheduleUpdate();
+    scheduleUpdate();    
     return true;
 }
 
@@ -63,7 +99,8 @@ void coreMatch::onTouch(Touch* touch)
     touchOneBox(touch);
 }
 
-void coreMatch::setBkGround()
+//load box cache plist, use batchnode to add box
+void coreMatch::loadPlist()
 {
     auto s = Director::getInstance()->getWinSize();
     SpriteFrameCache* cache = SpriteFrameCache::getInstance();
@@ -76,117 +113,13 @@ void coreMatch::setBkGround()
     _batchnode->setPosition(Point(s.width/2 - size.width*ROW/2,size.height*2));
 }
 
-void coreMatch::createItemBox(int r, int c)
-{
-    colorSpriteEnum randomEnum;
-    std::string spriteFrameFileName = "";
-    randomColor(randomEnum,spriteFrameFileName);
-    auto sprite = Sprite::createWithSpriteFrameName(spriteFrameFileName.c_str());
-    
-    _rc[r][c] = randomEnum;
-    _rcSprites[r][c] = sprite;
-    
-    sprite->setPosition(_boxesPos[r][c]);
-    sprite->setTag(r*ROW+c);
-    _batchnode->addChild(sprite);
-    return ;
-}
-
+//create boxes when enter game, all box be added into batchonde,
+//all boxed can be random produced
 void coreMatch::createBoxes()
 {
     auto sprite = Sprite::createWithSpriteFrameName("s_fanqie.png");
     auto size = sprite->getContentSize();
     _batchnode->removeAllChildrenWithCleanup(true);
-    
-    std::vector<std::vector<coord>> rcs;
-    std::vector<coord> rc;
-    
-    rc.push_back(coord(0,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,1));
-    rc.push_back(coord(1,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,2));
-    rc.push_back(coord(1,1));
-    rc.push_back(coord(2,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,3));
-    rc.push_back(coord(1,2));
-    rc.push_back(coord(2,1));
-    rc.push_back(coord(3,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,4));
-    rc.push_back(coord(1,3));
-    rc.push_back(coord(2,2));
-    rc.push_back(coord(3,1));
-    rc.push_back(coord(4,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,5));
-    rc.push_back(coord(1,4));
-    rc.push_back(coord(2,3));
-    rc.push_back(coord(3,2));
-    rc.push_back(coord(4,1));
-    rc.push_back(coord(5,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(0,6));
-    rc.push_back(coord(1,5));
-    rc.push_back(coord(2,4));
-    rc.push_back(coord(3,3));
-    rc.push_back(coord(4,2));
-    rc.push_back(coord(5,1));
-    rc.push_back(coord(6,0));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,1));
-    rc.push_back(coord(5,2));
-    rc.push_back(coord(4,3));
-    rc.push_back(coord(3,4));
-    rc.push_back(coord(2,5));
-    rc.push_back(coord(1,6));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,2));
-    rc.push_back(coord(5,3));
-    rc.push_back(coord(4,4));
-    rc.push_back(coord(3,5));
-    rc.push_back(coord(2,6));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,3));
-    rc.push_back(coord(5,4));
-    rc.push_back(coord(4,5));
-    rc.push_back(coord(3,6));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,4));
-    rc.push_back(coord(5,5));
-    rc.push_back(coord(4,6));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,5));
-    rc.push_back(coord(5,6));
-    rcs.push_back(rc);
-    
-    rc.clear();
-    rc.push_back(coord(6,6));
-    rcs.push_back(rc);
     
     int space = 1;
     Point start = Point(0,0);
@@ -200,64 +133,37 @@ void coreMatch::createBoxes()
         }
     }
     
-    Vector<FiniteTimeAction*> functionVecs;
-    auto delay = DelayTime::create(1.0f);
-    functionVecs.pushBack(delay);
-    
-    std::vector<std::vector<coord>>::iterator it = rcs.begin();
-    for(; it != rcs.end(); ++it)
-    {
-        std::vector<coord>::iterator xi = it->begin();
-        for(; xi != it->end(); ++xi)
-        {
-            coord cr = *xi;
-            int r = cr.r;
-            int c = cr.c;
-            
-            auto call = CallFunc::create(std::bind(&coreMatch::createItemBox,this,r,c));
-            auto delay = DelayTime::create(0.01f);
-            functionVecs.pushBack(call);
-            functionVecs.pushBack(delay);
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            colorSpriteEnum randomEnum;
+            std::string spriteFrameFileName = "";
+            matchAlgorithm::randomBox(randomEnum,spriteFrameFileName);
+            createItemBox(r,c,randomEnum);
         }
     }
-    Sequence* seq = Sequence::create(functionVecs);
-    this->runAction(seq);
 }
 
-void coreMatch::randomColor(colorSpriteEnum& randomEnum, std::string& spriteFrameFileName)
+void coreMatch::createItemBox(int r, int c, colorSpriteEnum ce)
 {
-    int idc = CCRANDOM_0_1()*5+1;
-    switch (idc) {
-        case 1:
-            randomEnum = kA;
-            spriteFrameFileName = "s_fanqie_b.png";
-            break;
-            
-        case 2:
-            randomEnum = kB;
-            spriteFrameFileName = "s_lanmei_b.png";
-            break;
-            
-        case 3:
-            randomEnum = kC;
-            spriteFrameFileName = "s_qiezi_b.png";
-            break;
-        case 4:
-            randomEnum = kD;
-            spriteFrameFileName = "s_tudou_b.png";
-            break;
-            
-        case 5:
-            randomEnum = kE;
-            spriteFrameFileName = "s_xigua_b.png";
-            break;
-            
-        default:
-            break;
+    const char* spriteFileName = matchAlgorithm::boxFileName(ce);
+    auto sprite = Sprite::createWithSpriteFrameName(spriteFileName);
+    _rc[r][c] = ce;
+    
+    if(_rcSprites[r][c])
+    {
+        _rcSprites[r][c]->removeFromParentAndCleanup(true);
+        _rcSprites[r][c] = nullptr;
     }
+    
+    _rcSprites[r][c] = sprite;
+    sprite->setPosition(_boxesPos[r][c]);
+    sprite->setTag(r*ROW+c);
+    _batchnode->addChild(sprite);
     return;
 }
 
+
+//make one guy to be grey
 void coreMatch::setupGraySprite(int r, int c)
 {
     Sprite* sprite = _rcSprites[r][c];
@@ -266,67 +172,15 @@ void coreMatch::setupGraySprite(int r, int c)
     
     Point pt = _boxesPos[r][c];
     pt = _batchnode->convertToWorldSpace(pt);
-    
-    colorSpriteEnum  ce = _rc[r][c];
-    std::string s_open = "", s_close = "";
-    
-    switch (ce) {
-        case kA:
-            s_open = "matchBox/s_fanqie.png";
-            s_close = "matchBox/s_fanqie_b.png";
-            break;
-            
-        case kB:
-            s_open = "matchBox/s_lanmei.png";
-            s_close = "matchBox/s_lanmei_b.png";
-            break;
-            
-        case kC:
-            s_open = "matchBox/s_qiezi.png";
-            s_close = "matchBox/s_qiezi_b.png";
-            break;
-            
-        case kD:
-            s_open = "matchBox/s_tudou.png";
-            s_close = "matchBox/s_tudou_b.png";
-            break;
-            
-        case kE:
-            s_open = "matchBox/s_xigua.png";
-            s_close = "matchBox/s_xigua_b.png";
-            break;
-            
-        default:
-            break;
-    }
-    
-    GreyScaleSprite *ss = GreyScaleSprite::createSprite(s_open.c_str());
+    GreyScaleSprite *ss = matchAlgorithm::makeBoxBecomeGray(_rc[r][c]);
     ss->setScale(0.5f);
     ss->setPosition(pt);
     this->addChild(ss);
     ss->setTag(r*ROW+c);
     _graysprites.pushBack(ss);
-    
-    //run animation
-    Animation* animation = Animation::create();
-    animation->addSpriteFrameWithFile(s_open);
-    animation->addSpriteFrameWithFile(s_close);
-    animation->addSpriteFrameWithFile(s_open);
-    animation->addSpriteFrameWithFile(s_close);
-    animation->addSpriteFrameWithFile(s_open);
-    animation->addSpriteFrameWithFile(s_close);
-    
-    //should last 2.8 seconds. And there are 14 frames.
-    animation->setDelayPerUnit(0.8f/6.0);
-    animation->setRestoreOriginalFrame(true);
-    Animate* action = Animate::create(animation);
-    if(ss)
-    {
-        ss->stopAllActions();
-        ss->runAction(RepeatForever::create(action));
-    }
 }
 
+//
 void coreMatch::clearGraySprites()
 {
     for(int i=0; i<_graysprites.size(); i++)
@@ -355,62 +209,83 @@ void coreMatch::touchOneBox(cocos2d::Touch *touch)
                 Point point = sprite->convertToNodeSpace(location);
                 auto rect = Rect(0, 0, sprite->getContentSize().width, sprite->getContentSize().height);
                 bool contain = rect.containsPoint(point);
+                colorSpriteEnum rc = _rc[r][c];
                 if(contain)
                 {
                     clearGraySprites();
-                    std::vector<coord> collections;
-                    findSameColorsSprite(r, c, collections);
-                    
-                    if(collections.size() <= 2)
-                    {
-                        for(int i=0; i<collections.size(); i++)
+                    switch (rc) {
+                            
+                        //自动胶囊
+                        case kPropAutoClear:
                         {
-                            coord co = collections[i];
-                            int r = co.r;
-                            int c = co.c;
-                            setupGraySprite(r,c);
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "自动胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropAutoClear, this, r, c));
+                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),DelayTime::create(0.3), play, nullptr);
+                            this->runAction(seq);
                         }
-                        _continueTimes = 0;
-                        _continueAddTime = 0;
-                        resetCanbeTouch();
-                        return;
-                    }
-                    else if(collections.size() >= 3)
-                    {
-                        //clearMatchTips();
-                        _bShowTip = true;
-                        _continueTimes += 1;
-                        if(_continueTimes == 1)
-                            _continueAddTime = 0;
-                        
-                        CCLOG(" time & cunt :%f, %d\n", _continueAddTime, _continueTimes);
-                        if(_continueAddTime <= CRAZYTIME && _continueTimes >= CRAZYCOUNT && _updateCrazyTime <= 0)
+                            break;
+                            
+                        //炸弹胶囊
+                        case kPropBoomb:
                         {
-                            CCLOG("enter crazy status\n");
-                            enterCrazyStatus();
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "炸弹胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropBoomb, this, r, c));
+                            auto seq = Sequence::create(flash, DelayTime::create(1.0f), play, nullptr);
+                            this->runAction(seq);
                         }
+                            break;
                         
-                        /*
-                         1: box dead effect
-                         2: attack monster
-                         3: movebox
-                        */
-                        
-                        //std::sort(std::begin(collections), std::end(collections), coordCompareLess );
-                        auto boxdead = CallFunc::create( std::bind(&coreMatch::boxDeadEffect, this, collections));
-                        auto movebox = CallFunc::create( std::bind(&coreMatch::moveBoxes, this));
-                        auto attackMonster = CallFunc::create( std::bind(&coreMatch::attackMonster, this, collections));
-                        auto reset = CallFunc::create( std::bind(&coreMatch::resetCanbeTouch,this));
-                        auto sequence = Sequence::create(boxdead,
-                                                         DelayTime::create(0.05f),
-                                                         attackMonster,
-                                                         movebox,
-                                                         DelayTime::create(MOVEDURATION),
-                                                         reset,
-                                                         NULL);
-                        this->runAction(sequence);
-                        return;
+                        //同色胶囊
+                        case kPropSameColorBoomb:
+                        {
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "同色胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropSameColorBoomb, this, r, c));
+                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
+                            this->runAction(seq);
+                        }
+                            break;
+                            
+                        //十字炸弹
+                        case kPropCorssBoomb:
+                        {
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "十字胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropCrossBoomb, this, r, c));
+                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
+                            this->runAction(seq);
+                        }
+                            break;
+                            
+                        //随机炸弹
+                        case kPropRandomBoom:
+                        {
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "随机胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropRandomBoomb, this, r, c));
+                            auto seq = Sequence::create(flash,DelayTime::create(1.0f), play, nullptr);
+                            this->runAction(seq);
+                        }
+                            break;
+                            
+                        //5色刷新
+                        case kPropFivePlaces:
+                        {
+                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "5色胶囊", 30));
+                            auto play = CallFunc::create( std::bind(&coreMatch::playPropFiveColorBoomb, this, r, c));
+                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
+                            this->runAction(seq);
+                        }
+                            break;
+                            
+                        case kA:
+                        case kB:
+                        case kC:
+                        case kD:
+                        case kE:
+                            this->playNormalBox(r,c);
+                            break;
+                        default:
+                            break;
                     }
+                    return;
                 }
             }
         }
@@ -418,116 +293,46 @@ void coreMatch::touchOneBox(cocos2d::Touch *touch)
     resetCanbeTouch();
 }
 
-void coreMatch::findSameColorsSprite(int r, int c, std::vector<coord>& collection)
+void coreMatch::excuteDeadAndBornBoxes(std::vector<coord>& collections)
 {
-    colorSpriteEnum curKc = _rc[r][c];
-    std::queue<coord> queues;
-    coord co;
-    co.r = r;
-    co.c = c;
-    queues.push(co);
+    int index = CCRANDOM_0_1()*(collections.size()-1);
+    coord co = collections[index];
+
+    std::sort(std::begin(collections), std::end(collections), coordCompare );
+    auto movebox = CallFunc::create( std::bind(&coreMatch::moveBoxes, this));
+    auto attackMonster = CallFunc::create( std::bind(&coreMatch::attackMonster, this, co.r, co.c));
+    auto reset = CallFunc::create( std::bind(&coreMatch::resetCanbeTouch,this));
     
-    collection.push_back(co);
+    Vector<FiniteTimeAction*> actions;
+    boxSequenceDead(collections, actions);
     
-    while (queues.size() > 0) {
-        coord co = queues.front();
-        queues.pop();
-        int r = co.r;
-        int c = co.c;
-        
-        processRC(queues, collection, curKc, r-1, c);
-        processRC(queues, collection, curKc, r+1, c);
-        processRC(queues, collection, curKc, r, c+1);
-        processRC(queues, collection, curKc, r, c-1);
-    }
+    
+    actions.pushBack(attackMonster);
+    actions.pushBack(DelayTime::create(0.15f));
+    actions.pushBack(movebox);
+    actions.pushBack(DelayTime::create(MOVEDURATION));
+    actions.pushBack(reset);
+    
+    auto seq = Sequence::create(actions);
+    this->runAction(seq);
+    return;
 }
 
-void coreMatch::processRC(std::queue<coord>& queues, std::vector<coord>& collection, colorSpriteEnum curKc, int r, int c)
+void coreMatch::boxSequenceDead(const std::vector<coord>& vecs, Vector<FiniteTimeAction*>& actions)
 {
-    bool check_bool = checkBundary(r, c);
-    if(check_bool)
+    std::vector<coord>::const_iterator it = vecs.begin();
+    for(int i=0; it != vecs.end(); ++it, ++i)
     {
-        coord co;
-        co.r = r;
-        co.c = c;
-        colorSpriteEnum Kc = _rc[r][c];
-        if(curKc == Kc)
-        {
-            bool check_contain = checkIfContain(collection, r, c);
-            if(!check_contain)
-            {
-                collection.push_back(co);
-                queues.push(co);
-            }
-        }
+        coord cd = *it;
+        int r = cd.r;
+        int c = cd.c;
+        
+        auto delay = DelayTime::create(0.02);
+        auto bind = CallFunc::create( std::bind(&coreMatch::boxDie, this, r,c));
+        actions.pushBack(delay);
+        actions.pushBack(bind);
     }
 }
-
-bool coreMatch::checkBundary(int r, int c)
-{
-    if(r<0 || r>=ROW)
-        return false;
-    
-    if(c<0 || c>=COL)
-        return false;
-    
-    return true;
-}
-
-bool coreMatch::checkIfContain(const std::vector<coord>& colleciton, int r, int c)
-{
-    coord co;
-    co.r = r;
-    co.c = c;
-    const std::vector<coord>::const_iterator it = std::find(colleciton.cbegin(), colleciton.cend(), co);
-    if(it == colleciton.cend())
-        return false;
-    return true;
-}
-
-void coreMatch::boxDeadEffect(const std::vector<coord>& collections)
-{
-    for(int i=0; i<collections.size(); i++)
-    {
-        coord co = collections[i];
-        int r = co.r;
-        int c = co.c;
-        
-        _rc[r][c] = kUnSigned;
-        if(_rcSprites[r][c])
-        {
-            _rcSprites[r][c]->removeFromParentAndCleanup(true);
-            _rcSprites[r][c]=nullptr;
-        }
-    }
-    
-    std::vector<coord>::const_iterator it = collections.begin();
-    for(; it != collections.end(); ++it)
-    {
-        coord co = *it;
-        int r = co.r;
-        int c = co.c;
-        
-        auto emitter = ParticleSystemQuad::create("Particles/grapes_splurt.plist");
-        addChild(emitter);
-        Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-        emitter->setPosition(pt);
-        emitter->setScale(0.5f);
-        emitter->setDuration(0.01);
-        
-        //auto emitter = ParticleSystemQuad::create("Particles/boomb.plist");
-        //emitter->setStartColor(Color4F(1,0,0,1));
-        //emitter->setBlendAdditive(false);
-        //emitter->setScale(0.5f);
-        //addChild(emitter);
-        //Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-        //emitter->setPosition(pt);
-        //emitter->setDuration(0.2f);
-        
-        //play bomb sound
-    }
-}
-
 
 void coreMatch::moveBoxes()
 {
@@ -555,7 +360,6 @@ void coreMatch::moveOneBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*
     
     //move to destination
     Point destnation = _boxesPos[first][c];
-    
     Sprite* sp = _rcSprites[r][c];
     auto action = moveAction(MOVEDURATION,destnation);
     
@@ -569,7 +373,6 @@ void coreMatch::moveOneBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*
     _rcSprites[first][c] = _rcSprites[r][c];
     _rcSprites[r][c] = nullptr;
 }
-
 
 void coreMatch::moveRowBoxes(int c)
 {
@@ -589,7 +392,6 @@ void coreMatch::moveRowBoxes(int c)
     //idle for one step duration
     shitVec.pushBack(DelayTime::create(stepDuration));
     
-    
     //born new box and make it move down
     int cnt = 0;
     for(int r=0; r<ROW; r++)
@@ -601,12 +403,11 @@ void coreMatch::moveRowBoxes(int c)
     {
         fucknewBox(runSprites, runActions, r, c);
     }
-
+    
     //make new born box move action
     boxCollectionSeqeunceMove(shitVec, runSprites,runActions);
     runActions.clear();
     runSprites.clear();
-    
     
     auto seq = Sequence::create(shitVec);
     this->runAction(seq);
@@ -617,20 +418,73 @@ void coreMatch::fucknewBox(Vector<Sprite*>& runSprites, Vector<FiniteTimeAction*
     Point pt = _boxesPos[r][c];
     colorSpriteEnum randomEnum;
     std::string spriteFrameFileName = "";
-    randomColor(randomEnum,spriteFrameFileName);
+    matchAlgorithm::randomBox(randomEnum,spriteFrameFileName);
     
-    auto sprite = Sprite::createWithSpriteFrameName(spriteFrameFileName.c_str());
-    sprite->setTag(r*ROW+c);
-    _rcSprites[r][c] = sprite;
-    _rc[r][c] = randomEnum;
-    
-    sprite->setPosition(Point(pt.x, pt.y+100));
-    auto action = moveAction(MOVEDURATION, pt);
-    
-    runSprites.pushBack(sprite);
-    runActions.pushBack(action);
-    _batchnode->addChild(sprite);
-    sprite->setVisible(false);
+    if(_bProduceProp)
+    {
+        colorSpriteEnum xx[] = {
+            
+            kPropAutoClear,       //自动胶囊
+            kPropBoomb,           //炸弹胶囊
+            kPropSameColorBoomb,  //同色胶囊
+            
+            kPropCorssBoomb,      //十字炸弹
+            kPropRandomBoom,      //随机炸弹
+            kPropFivePlaces,      //5色刷新
+        };
+        
+        std::string filenames[] = {
+            
+            "d_sanxiao_zhadan.png",
+            "d_zhadan.png",
+            "d_tongse_zhadan.png",
+            
+            "d_shizi_zhadan.png",
+            "d_20xiao_zhadan.png",
+            "d_huanse.png",
+        };
+        
+        int size = sizeof xx / sizeof(xx[0]);
+        //int index = CCRANDOM_0_1()* (sizeof xx / sizeof(xx[0])-1);
+        randomEnum = xx[_propSequence];
+        spriteFrameFileName = filenames[_propSequence];
+        
+        _propcount = _propcount + 1;
+        _propSequence = _propSequence + 1;
+        if(_propSequence >= size)
+            _propSequence = 0;
+
+        _bProduceProp = false;
+        _updatePropTime = 0;
+        
+        auto sprite = Sprite::createWithSpriteFrameName(spriteFrameFileName.c_str());
+        sprite->setTag(r*ROW+c);
+        _rcSprites[r][c] = sprite;
+        _rc[r][c] = randomEnum;
+        
+        sprite->setPosition(Point(pt.x, pt.y+100));
+        auto action = moveAction(MOVEDURATION, pt);
+        
+        runSprites.pushBack(sprite);
+        runActions.pushBack(action);
+        _batchnode->addChild(sprite);
+        sprite->setVisible(false);
+    }
+    else
+    {
+        auto sprite = Sprite::createWithSpriteFrameName(spriteFrameFileName.c_str());
+        sprite->setTag(r*ROW+c);
+        _rcSprites[r][c] = sprite;
+        _rc[r][c] = randomEnum;
+        
+        sprite->setPosition(Point(pt.x, pt.y+100));
+        auto action = moveAction(MOVEDURATION, pt);
+        
+        runSprites.pushBack(sprite);
+        runActions.pushBack(action);
+        _batchnode->addChild(sprite);
+        sprite->setVisible(false);
+    }
 }
 
 cocos2d::ActionInterval* coreMatch::moveAction(float duration, Point pt)
@@ -660,6 +514,7 @@ void coreMatch::boxCollectionSeqeunceMove(Vector<FiniteTimeAction*>& shitVec,
         
         //i do not know why must have add retain
         move->retain();
+        sp->retain();
         
         auto del = DelayTime::create(stepDuration);
         auto func = CallFunc::create(std::bind(&coreMatch::boxMove,this, sp, move));
@@ -667,6 +522,27 @@ void coreMatch::boxCollectionSeqeunceMove(Vector<FiniteTimeAction*>& shitVec,
         shitVec.pushBack(func);
     }
     return;
+}
+
+void coreMatch::boxDie(int r, int c)
+{
+    _rc[r][c] = kUnSigned;
+    if(_rcSprites[r][c])
+    {
+        _rcSprites[r][c]->removeFromParentAndCleanup(true);
+        _rcSprites[r][c]=nullptr;
+    }
+    
+    Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
+    auto emitter = ParticleSystemQuad::create("Particles/grapes_splurt.plist");
+    addChild(emitter);
+    emitter->setPosition(pt);
+    emitter->setScale(0.5f);
+    //emitter->setDuration(0.01);
+    
+    auto  seq = Sequence::create(DelayTime::create(0.5), RemoveSelf::create(), NULL);
+    emitter->runAction(seq);
+    //play bomb sound*/
 }
 
 void coreMatch::clearMatchTips()
@@ -679,16 +555,12 @@ void coreMatch::clearMatchTips()
     _showTips.clear();
 }
 
-void coreMatch::attackMonster(const std::vector<coord>& coords)
+void coreMatch::attackMonster(int r, int c)
 {
-    /*int index = CCRANDOM_0_1()*(coords.size()-1);
-    coord co = coords[index];
-    int r = co.r;
-    int c = co.c;
     Attack*  att = Attack::create();
     addChild(att);
     Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-    att->shootBullet(r, c, _monster_Pos, pt);*/
+    att->shootBullet(r, c, _monster_Pos, pt);
 }
 
 void coreMatch::randomShowMatchTip()
@@ -699,7 +571,7 @@ void coreMatch::randomShowMatchTip()
     for(int r=0; r<ROW; r++){
         for(int c=0; c<COL; c++){
             std::vector<coord> collection;
-            findSameColorsSprite(r, c, collection);
+            matchAlgorithm::findSameColorsSprite(_rc, r, c, collection);
             if(collection.size() > 2){
                 
                 clearMatchTips();
@@ -738,133 +610,6 @@ void coreMatch::randomShowMatchTip()
     }
 }
 
-int coreMatch::computeMatchBoxes()
-{
-    bool boxes[ROW][COL];
-    for(int r=0; r<ROW; r++){
-        for(int c=0; c<COL; c++){
-            boxes[r][c] = false;
-        }
-    }
-    
-    std::vector<std::vector<coord>> cs;
-    for(int r=0; r<ROW; r++){
-        for(int c=0; c<COL; c++){
-            if(!boxes[r][c])
-            {
-                std::vector<coord> collection;
-                findSameColorsSprite(r,c,collection);
-                
-                if(collection.size() >= 3)
-                    cs.push_back(collection);
-                
-                for(int i=0; i<collection.size(); i++)
-                {
-                    coord co = collection[i];
-                    boxes[co.r][co.c] = true;
-                }
-            }
-        }
-    }
-    return cs.size();
-}
-
-void coreMatch::makeBoxRun()
-{
-    //one time
-    int r = CCRANDOM_0_1()*(ROW-1);
-    int c = CCRANDOM_0_1()*(COL-1);
-    bool ret = findOneBoxAndMakeItRun(r,c);
-    while (!ret)
-    {
-        r = CCRANDOM_0_1()*(ROW-1);
-        c = CCRANDOM_0_1()*(COL-1);
-        ret = findOneBoxAndMakeItRun(r,c);
-    }
-    return;
-}
-
-bool coreMatch::findOneBoxAndMakeItRun(int r, int c)
-{
-    bool ret = false;
-    std::vector<coord> collection;
-    findSameColorsSprite(r, c, collection);
-    if(collection.size() >= 2)
-    {
-        std::vector<coord>::iterator it = collection.begin();
-        for(; it != collection.end(); ++it)
-        {
-            coord cd = *it;
-            colorSpriteEnum  cs = _rc[cd.r][cd.c];
-            
-            //left
-            bool bleft = recreateOneBox(cs, cd.r, cd.c-1);
-            if(bleft)
-                return true;
-            
-            //right
-            bool bright = recreateOneBox(cs, cd.r, cd.c+1);
-            if(bright)
-                return true;
-            
-            //top
-            bool btop = recreateOneBox(cs, cd.r+1, cd.c);
-            if(btop)
-                return true;
-            
-            //bottom
-            bool bbottom = recreateOneBox(cs, cd.r-1, cd.c);
-            if(bbottom)
-                return true;
-        }
-    }
-    return ret;
-}
-
-const char* coreMatch::getspriteFrameFileName(colorSpriteEnum ce)
-{
-    switch (ce) {
-        case kA:
-            return "s_fanqie_b.png";
-            break;
-        case kB:
-            return "s_lanmei_b.png";
-            break;
-        case kC:
-            return "s_qiezi_b.png";
-            break;
-        case kD:
-            return "s_tudou_b.png";
-            break;
-        case kE:
-            return "s_xigua_b.png";
-            break;
-        default:
-            break;
-    }
-    return "";
-}
-
-bool coreMatch::recreateOneBox(colorSpriteEnum cs, int r, int c)
-{
-    if(r>=0 && r<=ROW-1 && c>=0 && c<=COL-1)
-    {
-        if(_rc[r][c] != cs)
-        {
-            _rc[r][c] = cs;
-            _rcSprites[r][c]->removeFromParentAndCleanup(true);
-            _rcSprites[r][c] = nullptr;
-            const char* spriteFileFrameName = getspriteFrameFileName(cs);
-            auto sprite = Sprite::createWithSpriteFrameName(spriteFileFrameName);
-            _batchnode->addChild(sprite);
-            sprite->setPosition(_boxesPos[r][c]);
-            _rcSprites[r][c] = sprite;
-            return true;
-        }
-    }
-    return false;
-}
-
 void coreMatch::resetCanbeTouch()
 {
     _canbTouch = true;
@@ -874,72 +619,16 @@ void coreMatch::resetCanbeTouch()
     _updateGrayTime = 0.0f;
     _updateBarTime = 0.0f;
     clearMatchTips();
-
-    int cnt = computeMatchBoxes();
+    
+    int cnt = matchAlgorithm::computeMatchBoxes(_rc);
     if(cnt <= 0)
     {
-        makeBoxRun();
-    }
-}
-
-void coreMatch::makeBoxSimle(int r, int c)
-{
-    auto sprite = _rcSprites[r][c];
-    auto ce = _rc[r][c];
-    std::string fileFrameName_open = "";
-    std::string fileFrameName_close = "";
-    
-    switch (ce) {
-        case kA:
-            fileFrameName_open = "s_fanqie.png";
-            fileFrameName_close = "s_fanqie_b.png";
-            break;
-            
-        case kB:
-            fileFrameName_open = "s_lanmei.png";
-            fileFrameName_close = "s_lanmei_b.png";
-            break;
-            
-        case kC:
-            fileFrameName_open = "s_qiezi.png";
-            fileFrameName_close = "s_qiezi_b.png";
-            break;
-            
-        case kD:
-            fileFrameName_open = "s_tudou.png";
-            fileFrameName_close = "s_tudou_b.png";
-            break;
-            
-        case kE:
-            fileFrameName_open = "s_xigua.png";
-            fileFrameName_close = "s_xigua_b.png";
-            break;
-            
-        default:
-            break;
-    }
-    
-    Animation* animation = Animation::create();
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_open));
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_close));
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_open));
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_close));
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_open));
-    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(fileFrameName_close));
-    
-    //should last 2.8 seconds. And there are 14 frames.
-    animation->setDelayPerUnit(0.8f/ 6.0f);
-    animation->setRestoreOriginalFrame(true);
-    Animate* action = Animate::create(animation);
-    if(sprite)
-    {
-        sprite->stopAllActions();
-        sprite->runAction(RepeatForever::create(action));
+        matchAlgorithm::makeBoxRun(_rc, _boxesPos, _rcSprites, _batchnode);
     }
 }
 
 void coreMatch::enterCrazyStatus()
-{
+{    
     Animation* animation = Animation::create();
     for( int i=0; i<=4; i++)
     {
@@ -947,6 +636,7 @@ void coreMatch::enterCrazyStatus()
         sprintf(szName, "effect/zt2_%05d.png", i);
         animation->addSpriteFrameWithFile(szName);
     }
+    
     // should last 2.8 seconds. And there are 14 frames.
     animation->setDelayPerUnit(0.6f / 24.0f);
     animation->setRestoreOriginalFrame(true);
@@ -970,10 +660,6 @@ void coreMatch::quitCrazyStatus()
     this->removeChildByTag(kCrazyEffect);
 }
 
-void coreMatch::createShowTipParticl(int r, int c)
-{
-}
-
 void coreMatch::setupMotionBlur()
 {
     auto s = Director::getInstance()->getWinSize();
@@ -993,7 +679,6 @@ void coreMatch::setupMotionBlur()
         _renderTextures.pushBack(rtx);
     }
 }
-
 
 void coreMatch::selectNextRenderTexture()
 {
@@ -1037,6 +722,14 @@ void coreMatch::update(float delta)
             quitCrazyStatus();
         }
     }
+    
+    //update prop
+    _updatePropTime += delta;
+    if(_updatePropTime >= 5)
+    {
+        _updatePropTime = 0;
+        _bProduceProp = true;
+    }
 }
 
 void coreMatch::visit()
@@ -1049,8 +742,8 @@ void coreMatch::visit()
     }
     rtx->end();
     
-    // reorder the render textures so that the
-    // most recently rendered texture is drawn last
+    //reorder the render textures so that the
+    //most recently rendered texture is drawn last
     this->selectNextRenderTexture();
     int index = _currentRenderTextureIndex;
     for (int i = 0; i < _kRenderTextureCount; i++){
@@ -1073,4 +766,155 @@ void coreMatch::visit()
             child->visit();
     }
 }
+
+void coreMatch::flashLabelTTF(const char *name, int fontsize)
+{
+    auto size = Director::getInstance()->getWinSize();
+    // Adding "啊" letter at the end of string to make VS2012 happy, otherwise VS will generate errors
+    // like "Error 3 error C2146: syntax error : missing ')' before identifier 'label'";
+    TTFConfig ttfConfig("fonts/wt021.ttf",fontsize,GlyphCollection::DYNAMIC, name);
+    auto label = Label::createWithTTF(ttfConfig, name, TextHAlignment::CENTER, size.width);
+    label->setAnchorPoint(Point::ANCHOR_MIDDLE);
+    label->setPosition(Point(size.width / 2, size.height /2));
+    label->setLabelEffect(LabelEffect::GLOW,Color3B::YELLOW);
+    this->addChild(label);
+    
+    auto action = Sequence::create(
+                                   ScaleTo::create(0.5f,4.0f,4.0f),
+                                   ScaleTo::create(0.5f,1.0f,1.0f),
+                                   nullptr);
+    label->runAction(Sequence::create(action,RemoveSelf::create(),nullptr));
+}
+
+void coreMatch::playPropAutoClear(int r, int c)
+{
+    std::vector<std::vector<coord>> cs;
+    Prop::propAutoBoomb(_rc, cs);
+    std::vector<std::vector<coord>>::iterator it =cs.begin();
+    for(; it != cs.end(); ++it)
+    {
+        excuteDeadAndBornBoxes(*it);
+    }
+    
+    boxDie(r, c);
+    _propcount -= 1;
+}
+
+void coreMatch::playPropBoomb(int r, int c)
+{
+    std::vector<coord> vecs;
+    Prop::propBoomb(_rc,vecs,r,c);
+    excuteDeadAndBornBoxes(vecs);
+    boxDie(r, c);
+    _propcount -= 1;
+}
+
+void coreMatch::playPropSameColorBoomb(int r, int c)
+{
+    std::vector<coord> vecs;
+    Prop::propSameColorBoomb(_rc, vecs);
+    excuteDeadAndBornBoxes(vecs);
+    boxDie(r, c);
+    _propcount -= 1;
+}
+
+void coreMatch::playPropCrossBoomb(int r, int c)
+{
+    std::vector<coord> rowVecs;
+    std::vector<coord> colVecs;
+    Prop::propCrossBooomb(_rc,r,c,rowVecs,colVecs);
+    
+    std::sort(std::begin(rowVecs), std::end(rowVecs), coordCompare);
+    std::sort(std::begin(colVecs), std::end(colVecs), coordCompare);
+    
+    Vector<FiniteTimeAction*> actions;
+    boxSequenceDead(rowVecs, actions);
+    boxSequenceDead(colVecs, actions);
+    
+    auto movebox = CallFunc::create( std::bind(&coreMatch::moveBoxes, this));
+    auto attackMonster = CallFunc::create( std::bind(&coreMatch::attackMonster, this, r,c));
+    auto reset = CallFunc::create( std::bind(&coreMatch::resetCanbeTouch,this));
+    
+    actions.pushBack(attackMonster);
+    actions.pushBack(DelayTime::create(0.15f));
+    actions.pushBack(movebox);
+    actions.pushBack(DelayTime::create(MOVEDURATION));
+    actions.pushBack(reset);
+    
+    auto seq = Sequence::create(actions);
+    this->runAction(seq);
+    
+    boxDie(r,c);
+    _propcount -= 1;
+}
+
+void coreMatch::playPropRandomBoomb(int r, int c)
+{
+    std::vector<coord> vecs;
+    Prop::propRandomBoomNBoxes(_rc, vecs);
+    excuteDeadAndBornBoxes(vecs);
+    boxDie(r,c);
+    _propcount -= 1;
+    return;
+
+}
+
+void coreMatch::playPropFiveColorBoomb(int r, int c)
+{
+    Prop::propFiveColorSpace(_rc);
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            auto ce = _rc[r][c];
+            createItemBox(r, c, ce);
+        }
+    }
+    
+    clearGraySprites();
+    clearMatchTips();
+    
+    _propcount -= 1;
+    resetCanbeTouch();
+}
+
+void coreMatch::playNormalBox(int r, int c)
+{
+    std::vector<coord> collections;
+    matchAlgorithm::findSameColorsSprite(_rc,r, c, collections);
+    
+    if(collections.size() <= 2)
+    {
+        for(int i=0; i<collections.size(); i++)
+        {
+            coord co = collections[i];
+            int r = co.r;
+            int c = co.c;
+            setupGraySprite(r,c);
+        }
+        _continueTimes = 0;
+        _continueAddTime = 0;
+        resetCanbeTouch();
+        return;
+    }
+    else if(collections.size() >= 3)
+    {
+        //clearMatchTips();
+        _bShowTip = true;
+        _continueTimes += 1;
+        if(_continueTimes == 1)
+            _continueAddTime = 0;
+        
+        CCLOG(" time & cunt :%f, %d\n", _continueAddTime, _continueTimes);
+        if(_continueAddTime <= CRAZYTIME && _continueTimes >= CRAZYCOUNT && _updateCrazyTime <= 0)
+        {
+            CCLOG("enter crazy status\n");
+            enterCrazyStatus();
+        }
+        excuteDeadAndBornBoxes(collections);
+        return;
+    }
+}
+
+
+
+
 

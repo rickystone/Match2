@@ -1,0 +1,306 @@
+{
+  "content_scale": 1.0,
+  "armature_data": [
+    {
+      "strVersion": "1.2.0.1",
+      "version": 1.201,
+      "name": "dongzuo",
+      "bone_data": [
+        {
+          "name": "Layer1",
+          "parent": "",
+          "x": 0.0,
+          "y": 0.0,
+          "z": 5,
+          "cX": 1.0,
+          "cY": 1.0,
+          "kX": 0.0,
+          "kY": 0.0,
+          "arrow_x": 0.0,
+          "arrow_y": 0.0,
+          "effectbyskeleton": false
+        },
+        {
+          "name": "b_lian",
+          "parent": "",
+          "x": -1.5145468711853027,
+          "y": -3.3295717239379883,
+          "z": 3,
+          "cX": 1.0,
+          "cY": 1.0,
+          "kX": 0.0,
+          "kY": 0.0,
+          "arrow_x": 1.0728836059570313E-05,
+          "arrow_y": -4.0784088923828676E-06,
+          "effectbyskeleton": true,
+          "display_data": [
+            {
+              "name": "chongwu.png",
+              "displayType": 0,
+              "skin_data": [
+                {
+                  "x": 0.434754133,
+                  "y": 5.07246256,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.0,
+                  "kY": 0.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Layer7",
+          "parent": "",
+          "x": 23.333333969116211,
+          "y": 38.818511962890625,
+          "z": 2,
+          "cX": 1.0,
+          "cY": 1.0,
+          "kX": -0.9773844,
+          "kY": 0.9773844,
+          "arrow_x": 34.823162078857422,
+          "arrow_y": -1.2229270396346692E-05,
+          "effectbyskeleton": true,
+          "display_data": [
+            {
+              "name": "erduo_you.png",
+              "displayType": 0,
+              "skin_data": [
+                {
+                  "x": -6.25481033,
+                  "y": -11.5902567,
+                  "cX": 1.00000012,
+                  "cY": 1.00000012,
+                  "kX": 0.7446043,
+                  "kY": -0.74460423
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Layer8",
+          "parent": "",
+          "x": -26.666656494140625,
+          "y": 40.485179901123047,
+          "z": 1,
+          "cX": 1.0,
+          "cY": 1.0,
+          "kX": -2.12930179,
+          "kY": 2.12930179,
+          "arrow_x": 33.591579437255859,
+          "arrow_y": 7.1727690738043748E-06,
+          "effectbyskeleton": true,
+          "display_data": [
+            {
+              "name": "erduo_zuo.png",
+              "displayType": 0,
+              "skin_data": [
+                {
+                  "x": -10.5417633,
+                  "y": 7.24233246,
+                  "cX": 0.99999994,
+                  "cY": 0.99999994,
+                  "kX": 2.37008715,
+                  "kY": -2.370087
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "animation_data": [
+    {
+      "name": "dongzuo",
+      "mov_data": [
+        {
+          "name": "Animation2",
+          "dr": 26,
+          "lp": true,
+          "to": 0,
+          "drTW": 0,
+          "twE": 0,
+          "sc": 1.0,
+          "mov_bone_data": [
+            {
+              "name": "b_lian",
+              "dl": 0.0,
+              "frame_data": [
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.0,
+                  "kY": 0.0,
+                  "fi": 0,
+                  "twE": 0,
+                  "tweenFrame": true
+                }
+              ]
+            },
+            {
+              "name": "Layer7",
+              "dl": 0.0,
+              "frame_data": [
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.0,
+                  "kY": 0.0,
+                  "fi": 0,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.947668135,
+                  "kY": -0.947668135,
+                  "fi": 10,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": -0.608538747,
+                  "kY": 0.608538747,
+                  "fi": 20,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.3219282,
+                  "kY": -0.3219282,
+                  "fi": 25,
+                  "twE": 0,
+                  "tweenFrame": true
+                }
+              ]
+            },
+            {
+              "name": "Layer8",
+              "dl": 0.0,
+              "frame_data": [
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.0,
+                  "kY": 0.0,
+                  "fi": 0,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": 0.5441094,
+                  "kY": -0.5441094,
+                  "fi": 10,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": -0.955093265,
+                  "kY": 0.955093265,
+                  "fi": 20,
+                  "twE": 0,
+                  "tweenFrame": true
+                },
+                {
+                  "dI": 0,
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0,
+                  "cX": 1.0,
+                  "cY": 1.0,
+                  "kX": -0.180413291,
+                  "kY": 0.180413291,
+                  "fi": 25,
+                  "twE": 0,
+                  "tweenFrame": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "texture_data": [
+    {
+      "name": "chongwu",
+      "width": 90.0,
+      "height": 90.0,
+      "pX": 0.5,
+      "pY": 0.5222222,
+      "plistFile": ""
+    },
+    {
+      "name": "erduo_you",
+      "width": 47.0,
+      "height": 46.0,
+      "pX": 0.382978737,
+      "pY": 0.173913047,
+      "plistFile": ""
+    },
+    {
+      "name": "erduo_zuo",
+      "width": 47.0,
+      "height": 46.0,
+      "pX": 0.680851042,
+      "pY": 0.2173913,
+      "plistFile": ""
+    },
+    {
+      "name": "erduo",
+      "width": 96.0,
+      "height": 52.0,
+      "pX": 0.5,
+      "pY": 0.5,
+      "plistFile": ""
+    }
+  ],
+  "config_file_path": [
+    "dongzuo0.plist"
+  ]
+}

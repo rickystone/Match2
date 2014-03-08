@@ -20,6 +20,7 @@
 #include "monster.h"
 #include "Pet.h"
 #include "AnimationUtil.h"
+#include "Prop.h"
 
 using namespace cocostudio;
 
@@ -90,7 +91,6 @@ void match::update(float delta)
             //unscheduleUpdate();
         }
     }
-
 }
 
 bool match::init()
@@ -101,6 +101,19 @@ bool match::init()
         return false;
     }
     
+    auto s = Director::getInstance()->getWinSize();
+    
+    
+   /* //remove sigle resource
+    ArmatureDataManager::getInstance()->removeArmatureFileInfo("Export/dongzuo.ExportJson");
+    //load resource directly
+    ArmatureDataManager::getInstance()->addArmatureFileInfo("Export/dongzuo.ExportJson");
+    Armature *armature = Armature::create("dongzuo");
+    armature->getAnimation()->playWithIndex(0);
+    armature->setPosition(Point(s.width/2,s.height/2));
+    addChild(armature);
+    return true;*/
+    
     _pCoreMatch = new coreMatch();
     _pCoreMatch->init();
     
@@ -110,31 +123,28 @@ bool match::init()
     _pPet = new Pet;
     _pPet->init();
     
-    
     addChild(_pCoreMatch,1);
     addChild(_pMonster);
     addChild(_pPet);
     
     _pCoreMatch->setmonster_Pos(_pMonster->getmonster_pos());
-    
     //碰撞检测回调
     auto contactListener = EventListenerPhysicsContact::create();
     contactListener->onContactBegin = CC_CALLBACK_2(match::onContactBegin, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
     
     scheduleUpdate();
-    
+     
     //set up back ground
     auto bkground = Sprite::create("UI/ui2_r3_c1.png");
     addChild(bkground,-1,kFirstBack);
-    auto s = Director::getInstance()->getWinSize();
     bkground->setPosition(Point(s.width/2,s.height/2));
     
     setupPauseButton();
     
     setupTimerProgress();
     setupEnergyProgress();
-    
+
     return true;
 }
 
@@ -169,6 +179,9 @@ void match::onTouchMoved(Touch* touch, Event* event)
 void match::onTouchEnded(Touch* touch, Event* event)
 {
     _pCoreMatch->onTouch(touch);
+    //auto emitter = ParticleSystemQuad::create("effect/henxiang_baozha.plist");
+    //addChild(emitter);
+    //emitter->setPosition(touch->getLocation());
     return;
 }
 
@@ -250,7 +263,7 @@ void match::setupEnergyProgress()
 void match::popupLayer()
 {
     //定义一个弹出层，传入一张背景图
-    PopupLayer* pl = PopupLayer::create("popuplayer/BackGround.png");
+    PopupLayer* pl = PopupLayer::create("btn0.png");
     //ContentSize 是可选的设置，可以不设置，如果设置把它当作 9 图缩放
     pl->setContentSize(Size(400, 350));
     pl->setTitle("时间到了");
@@ -259,10 +272,10 @@ void match::popupLayer()
     //这只是作为一种封装实现，如果使用 delegate 那就能够更灵活的控制参数了
     pl->setCallbackFunc(this, callfuncN_selector(match::buttonCallback));
     //添加按钮，设置图片，文字，tag 信息
-    pl->addButton("popuplayer/pop_button.png", "popuplayer/pop_button.png", "确定", 0);
+    pl->addButton("icon.png", "icon.png", "确定", 0);
     //pl->addButton("popuplayer/pop_button.png", "popuplayer/pop_button.png", "取消", 1);
     //添加到当前层
-    this->addChild(pl);
+    this->addChild(pl,100);
 }
 
 void match::setupPauseButton()

@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414907946.729633"
+            timestampString = "415962442.233875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
-            landmarkName = "coreMatch::setBkGround()"
+            startingLineNumber = "105"
+            endingLineNumber = "105"
+            landmarkName = "coreMatch::loadPlist()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,13 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414918448.823048"
+            timestampString = "415962442.233875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "332"
-            endingLineNumber = "332"
-            landmarkName = "coreMatch::clearGraySprites()"
-            landmarkType = "5">
+            startingLineNumber = "184"
+            endingLineNumber = "184">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -71,38 +69,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "774"
-            endingLineNumber = "774"
-            landmarkName = "coreMatch::makeBoxRun()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "775"
-            endingLineNumber = "775"
-            landmarkName = "coreMatch::makeBoxRun()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "../Classes/monster.cpp"
             timestampString = "414301733.715319"
             startingColumnNumber = "9223372036854775807"
@@ -120,11 +86,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/match.cpp"
-            timestampString = "414942456.752528"
+            timestampString = "415806723.558473"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "183"
-            endingLineNumber = "183"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
             landmarkName = "match::onContactBegin(EventCustom *event, const PhysicsContact&amp; contact)"
             landmarkType = "5">
          </BreakpointContent>
@@ -136,11 +102,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414918448.823048"
+            timestampString = "415962442.233875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "389"
-            endingLineNumber = "389"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
             landmarkName = "coreMatch::touchOneBox(cocos2d::Touch *touch)"
             landmarkType = "5">
          </BreakpointContent>
@@ -152,13 +118,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414918448.823048"
+            timestampString = "415962442.233875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
-            landmarkName = "coreMatch::touchOneBox(cocos2d::Touch *touch)"
-            landmarkType = "5">
+            startingLineNumber = "566"
+            endingLineNumber = "566">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -168,119 +132,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414918448.823048"
+            timestampString = "415962442.233875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "363"
-            endingLineNumber = "363"
-            landmarkName = "coreMatch::touchOneBox(cocos2d::Touch *touch)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "coreMatch::touchOneBox(cocos2d::Touch*)"
-                  moduleName = "Match iOS"
-                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/coreMatch.cpp"
-                  timestampString = "414573029.490467"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "329"
-                  endingLineNumber = "329"
-                  offsetFromSymbolStart = "479">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "coreMatch::touchOneBox(cocos2d::Touch*)"
-                  moduleName = "Match iOS"
-                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/coreMatch.cpp"
-                  timestampString = "414573029.490941"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "329"
-                  endingLineNumber = "329"
-                  offsetFromSymbolStart = "517">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "coreMatch::touchOneBox(cocos2d::Touch*)"
-                  moduleName = "Match iOS"
-                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/coreMatch.cpp"
-                  timestampString = "414573029.491217"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "329"
-                  endingLineNumber = "329"
-                  offsetFromSymbolStart = "641">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414918448.823048"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "355"
-            endingLineNumber = "355"
-            landmarkName = "coreMatch::touchOneBox(cocos2d::Touch *touch)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "921"
-            endingLineNumber = "921"
-            landmarkName = "coreMatch::makeBoxSimle(int r, int c)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "696"
-            endingLineNumber = "696"
-            landmarkName = "coreMatch::randomShowMatchTip()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1038"
-            endingLineNumber = "1038"
+            startingLineNumber = "725"
+            endingLineNumber = "725"
             landmarkName = "coreMatch::update(float delta)"
             landmarkType = "5">
          </BreakpointContent>
@@ -292,11 +148,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/match.cpp"
-            timestampString = "414942456.752528"
+            timestampString = "415806723.558473"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "329"
-            endingLineNumber = "329"
+            startingLineNumber = "346"
+            endingLineNumber = "346"
             landmarkName = "match::pauseButtonEvent(cocos2d::Object *pSender, TouchEventType type)"
             landmarkType = "5">
          </BreakpointContent>
@@ -385,22 +241,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../Classes/coreMatch.cpp"
-            timestampString = "414942708.4813"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1044"
-            endingLineNumber = "1044"
-            landmarkName = "coreMatch::visit()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "../Classes/CCFlash.cpp"
             timestampString = "414939788.484799"
             startingColumnNumber = "9223372036854775807"
@@ -450,11 +290,153 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/match.cpp"
-            timestampString = "414942456.752528"
+            timestampString = "415806723.558473"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "174"
-            endingLineNumber = "174">
+            startingLineNumber = "191"
+            endingLineNumber = "191"
+            landmarkName = "match::onContactBegin(EventCustom *event, const PhysicsContact&amp; contact)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/PropUI.h"
+            timestampString = "415108114.172526"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "21"
+            endingLineNumber = "21"
+            landmarkName = "class PropUI"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/Prop.cpp"
+            timestampString = "415963338.508149"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
+            landmarkName = "Prop::propFiveColorSpace(colorSpriteEnum newRc[ROW][COL])"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/Prop.cpp"
+            timestampString = "415963338.508149"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "409"
+            endingLineNumber = "409"
+            landmarkName = "Prop::WalkSameColor(int r, int c, bool boolbxo[ROW][COL], colorSpriteEnum newRc[ROW][COL], colorSpriteEnum curCS, int cnt)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/Prop.cpp"
+            timestampString = "415963338.508149"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "Prop::propCrossBooomb(const colorSpriteEnum rc[ROW][COL], int r, int c, std::vector&lt;coord&gt;&amp; rowVecs,std::vector&lt;coord&gt;&amp; colVecs)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Prop::propCrossBooomb(colorSpriteEnum const (*) [7], int, int, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;)"
+                  moduleName = "Match Mac"
+                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/Prop.cpp"
+                  timestampString = "415952776.256678"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "135"
+                  endingLineNumber = "135"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Prop::propCrossBooomb(colorSpriteEnum const (*) [7], int, int, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;)"
+                  moduleName = "Match Mac"
+                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/Prop.cpp"
+                  timestampString = "415952776.256866"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "135"
+                  endingLineNumber = "135"
+                  offsetFromSymbolStart = "608">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/Prop.cpp"
+            timestampString = "415963338.508149"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "148"
+            endingLineNumber = "148"
+            landmarkName = "Prop::propCrossBooomb(const colorSpriteEnum rc[ROW][COL], int r, int c, std::vector&lt;coord&gt;&amp; rowVecs,std::vector&lt;coord&gt;&amp; colVecs)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Prop::propCrossBooomb(colorSpriteEnum const (*) [7], int, int, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;)"
+                  moduleName = "Match Mac"
+                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/Prop.cpp"
+                  timestampString = "415952799.369059"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "146"
+                  endingLineNumber = "146"
+                  offsetFromSymbolStart = "630">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Prop::propCrossBooomb(colorSpriteEnum const (*) [7], int, int, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;, std::__1::vector&lt;coord, std::__1::allocator&lt;coord&gt; &gt;&amp;)"
+                  moduleName = "Match Mac"
+                  urlString = "file:///Users/chengxiaoer/Documents/Match/Classes/Prop.cpp"
+                  timestampString = "415952799.369342"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "146"
+                  endingLineNumber = "146"
+                  offsetFromSymbolStart = "1119">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

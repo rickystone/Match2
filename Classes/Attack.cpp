@@ -28,8 +28,8 @@ Attack* Attack::create()
 
 void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
 {
-    auto sprite = Sprite::create("matchBox/s_tudou.png");
-    sprite->setScale(0.5f);
+    auto sprite = Sprite::create("matchBox/s_tudou_b.png");
+    sprite->setScale(0.25f);
     
     auto body = PhysicsBody::createCircle(sprite->getContentSize().width/2);
     body->setCategoryBitmask(0x04);
@@ -57,13 +57,13 @@ void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
     bezier.controlPoint_1 = startPoint;
     bezier.endPosition = destination;
     bezier.controlPoint_2 = Point(frandom_range(startPoint.x, destination.y), frandom_range(startPoint.y, destination.y));
-    auto bezierTo = BezierTo::create(1.0, bezier);
+    auto bezierTo = BezierTo::create(0.5, bezier);
     
     auto bind1  = CallFunc::create( std::bind(&Attack::stopBulletSpeed, this, sprite));
     auto s1 = Sequence::create(bezierTo, bind1, NULL);
     auto fadeout = FadeOut::create(1.0f);
     auto removeSelf = RemoveSelf::create();
-    auto seq = Sequence::create(s1,DelayTime::create(1.0f),fadeout,removeSelf,NULL);
+    auto seq = Sequence::create(s1,DelayTime::create(0.2f),fadeout,removeSelf,NULL);
     sprite->runAction(seq);
     this->addChild(sprite);
     sprite->setPosition(startPoint);

@@ -4,6 +4,136 @@
     <dict>
         <key>frames</key>
         <dict>
+            <key>d_20xiao_zhadan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{895,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_baibaoxiang.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{848,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_huanse.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{801,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_jifenqingsuan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{754,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_jifenzengjia.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{707,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_sanxiao_zhadan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{660,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_shizhong.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{613,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_shizi_zhadan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{566,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_tongse_zhadan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{519,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
+            <key>d_zhadan.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{472,2},{45,45}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{45,45}}</string>
+                <key>sourceSize</key>
+                <string>{45,45}</string>
+            </dict>
             <key>s_fanqie.png</key>
             <dict>
                 <key>frame</key>
@@ -142,9 +272,9 @@
             <key>realTextureFileName</key>
             <string>item.png</string>
             <key>size</key>
-            <string>{472,49}</string>
+            <string>{942,49}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:d1e5f0ff80bc1c1ca63c3b1b4cd5e86f$</string>
+            <string>$TexturePacker:SmartUpdate:e89aed27ee65ba1f8581b03478727e41$</string>
             <key>textureFileName</key>
             <string>item.png</string>
         </dict>

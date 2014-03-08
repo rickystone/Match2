@@ -30,6 +30,9 @@ public:
     bool init();
     
 private:
+    
+    void previousCallback(Object* sender, TouchEventType type);
+    
     void setupBackGround();
     void setupButton();
     void touchEvent(Object *pSender, TouchEventType type);
