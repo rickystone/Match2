@@ -29,7 +29,7 @@ public:
     static void randomBox(colorSpriteEnum& randomEnum, std::string& spriteFrameFileName);
     static int  computeMatchBoxes(const colorSpriteEnum _rc[ROW][COL]);
     
-    static GreyScaleSprite* makeBoxBecomeGray(colorSpriteEnum cs);
+    static Sprite* makeBoxBecomeGray(colorSpriteEnum cs);
     
     static void makeBoxRun(colorSpriteEnum rc[ROW][COL],
                     const Point boxpos[ROW][COL],
@@ -50,6 +50,14 @@ public:
 
     
     static const char* boxFileName(colorSpriteEnum ce);
+    
+    static bool checkIsHaveProps(const colorSpriteEnum rc[ROW][COL]);
+    
+    static void computerAttackCoords(const std::vector<coord>& inputVecs, std::vector<coord>& outputsVecs);
+
+    static void playClearAccount(const colorSpriteEnum rc[ROW][COL],
+                                 std::vector<boxInfo>& propVecs,
+                                 std::vector<coord>& randomVecs);
     
 private:
     static void processRC(const colorSpriteEnum _rc[ROW][COL], std::queue<coord>& queues, std::vector<coord>& collection,

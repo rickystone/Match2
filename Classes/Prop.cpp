@@ -50,7 +50,7 @@ void Prop::setupProp()
     return;
 }
 
-void Prop::propAutoBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<std::vector<coord>>& cs)
+void Prop::propAutoBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<coord>& vecs)
 {
     bool boxes[ROW][COL];
     for(int r=0; r<ROW; r++){
@@ -67,7 +67,7 @@ void Prop::propAutoBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<std::ve
                 matchAlgorithm::findSameColorsSprite(rc,r,c,collection);
                 
                 if(collection.size() >= 3)
-                    cs.push_back(collection);
+                    std::copy(std::begin(collection), std::end(collection), std::back_inserter(vecs));
                 
                 for(int i=0; i<collection.size(); i++)
                 {

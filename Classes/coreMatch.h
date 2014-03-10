@@ -52,8 +52,6 @@ private:
     //check if one touch is in one box
     void touchOneBox(cocos2d::Touch *touch);
     
-    void  excuteDeadAndBornBoxes(std::vector<coord>& colleciton);
-    
     void boxSequenceDead(const std::vector<coord>& vecs, Vector<FiniteTimeAction*>& actions);    
     void moveBoxes();
     
@@ -71,7 +69,8 @@ private:
     
     void clearMatchTips();
     
-    void attackMonster(int r, int c);
+    void attackMonster(const std::vector<coord>& outPutVecs, Vector<FiniteTimeAction*>& actions);
+    void startAttack(int r, int c);
     
     void randomShowMatchTip();
             
@@ -100,6 +99,7 @@ private:
     
     CC_SYNTHESIZE(Point, _monster_Pos, monster_Pos)
     
+    void excuteMatchFunc (std::vector<coord>& colleciton, colorSpriteEnum cs, const char* particleFileName ="", int propR=0, int propC=0);
     void playPropAutoClear(int r, int c);
     void playPropBoomb(int r, int c);
     void playPropSameColorBoomb(int r ,int c);
@@ -108,20 +108,27 @@ private:
     void playPropFiveColorBoomb(int r, int c);
     void playNormalBox(int r, int c);
     void flashLabelTTF(const char* name, int fontsize);
+    
+    void playParticleEffect(const char* particleFileName, int r, int c);
+    void playBulletEffect(int r, int c);
+    
+    void playClearAccount();
+    void popTimeOver();
+    void buttonCallback(cocos2d::Node *pNode);
 private:
     SpriteBatchNode* _batchnode;
     
     ///show what the box is what kind of box
-    //colorSpriteEnum _rc[ROW][COL];
+    colorSpriteEnum _rc[ROW][COL];
     
     //show box position
-    //cocos2d::Point _boxesPos[ROW][COL];
+    cocos2d::Point _boxesPos[ROW][COL];
     
     //box house
-    //cocos2d::Sprite* _rcSprites[ROW][COL];
+    cocos2d::Sprite* _rcSprites[ROW][COL];
     
     //grey sprites
-    cocos2d::Vector<GreyScaleSprite*> _graysprites;
+    cocos2d::Vector<Sprite*> _graysprites;
     
     //tip sprites
     cocos2d::Vector<Sprite*> _showTips;

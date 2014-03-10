@@ -146,41 +146,62 @@ int matchAlgorithm::computeMatchBoxes(const colorSpriteEnum _rc[ROW][COL])
 }
 
 //set box grey
-GreyScaleSprite* matchAlgorithm::makeBoxBecomeGray(colorSpriteEnum cs)
+Sprite* matchAlgorithm::makeBoxBecomeGray(colorSpriteEnum cs)
 {
     std::string s_open = "", s_close = "";
     
     switch (cs) {
         case kA:
-            s_open = "matchBox/s_fanqie.png";
-            s_close = "matchBox/s_fanqie_b.png";
+            s_open = "s_fanqie.png";
+            s_close = "s_fanqie_b.png";
             break;
             
         case kB:
-            s_open = "matchBox/s_lanmei.png";
-            s_close = "matchBox/s_lanmei_b.png";
+            s_open = "s_lanmei.png";
+            s_close = "s_lanmei_b.png";
             break;
             
         case kC:
-            s_open = "matchBox/s_qiezi.png";
-            s_close = "matchBox/s_qiezi_b.png";
+            s_open = "s_qiezi.png";
+            s_close = "s_qiezi_b.png";
             break;
             
         case kD:
-            s_open = "matchBox/s_tudou.png";
-            s_close = "matchBox/s_tudou_b.png";
+            s_open = "s_tudou.png";
+            s_close = "s_tudou_b.png";
             break;
             
         case kE:
-            s_open = "matchBox/s_xigua.png";
-            s_close = "matchBox/s_xigua_b.png";
+            s_open = "s_xigua.png";
+            s_close = "s_xigua_b.png";
             break;
             
         default:
             break;
     }
     
-    GreyScaleSprite *ss = GreyScaleSprite::createSprite(s_open.c_str());    
+    auto sprite = Sprite::createWithSpriteFrameName(s_open.c_str());
+    Animation* animation = Animation::create();
+    
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+    animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+    
+    //should last 2.8 seconds. And there are 14 frames.
+    animation->setDelayPerUnit(0.8f/6.0);
+    animation->setRestoreOriginalFrame(true);
+    Animate* action = Animate::create(animation);
+    if(sprite)
+    {
+        sprite->stopAllActions();
+        sprite->runAction(RepeatForever::create(action));
+    }
+    return sprite;
+    
+    /*GreyScaleSprite *ss = GreyScaleSprite::createSprite(s_open.c_str());
     //run animation
     Animation* animation = Animation::create();
     animation->addSpriteFrameWithFile(s_open);
@@ -198,8 +219,8 @@ GreyScaleSprite* matchAlgorithm::makeBoxBecomeGray(colorSpriteEnum cs)
     {
         ss->stopAllActions();
         ss->runAction(RepeatForever::create(action));
-    }
-    return ss;
+    }*/
+    //return ss;
 }
 
 void matchAlgorithm::makeBoxRun(colorSpriteEnum rc[ROW][COL],
@@ -333,4 +354,276 @@ const char* matchAlgorithm::boxFileName(colorSpriteEnum ce)
     }
     return "";
 }
+
+bool matchAlgorithm::checkIsHaveProps(const colorSpriteEnum rc[ROW][COL])
+{
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            colorSpriteEnum cs  = rc[r][c];
+            
+            if(cs == kPropAutoClear ||
+               cs == kPropBoomb ||
+               cs == kPropSameColorBoomb ||
+               
+               cs == kPropCorssBoomb ||
+               cs == kPropRandomBoom ||
+               cs == kPropFivePlaces)
+                return true;
+        }
+    }
+    return false;
+}
+
+void matchAlgorithm::computerAttackCoords(const std::vector<coord>& inputVecs, std::vector<coord>& outputsVecs)
+{
+   /*
+     子弹数量和消除方块数量相关
+     消除3个方块，子弹为1个
+     消除4,5个方块，子弹为2个
+     消除6个方块，子弹为3个
+     消除7,8个方块，子弹为4个
+     消除9个方块，子弹为5个
+     消除10个或以上的方块，子弹为6个
+    */
+    
+    int size = inputVecs.size();
+    if(size == 3)
+    {
+        int index = CCRANDOM_0_1()*(inputVecs.size()-1);
+        coord cd = inputVecs[index];
+        outputsVecs.push_back(cd);
+    }
+    
+    else if(size ==5 || size == 4)
+    {
+        int index1, index2;
+        index1 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        while(index1 == index2)
+            index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        outputsVecs.push_back(inputVecs[index1]);
+        outputsVecs.push_back(inputVecs[index2]);
+    }
+    
+    else if(size == 6)
+    {
+        int index1, index2, index3;
+        index1 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index1 == index2)
+            index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index3 == index1 && index3 != index2)
+            index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        outputsVecs.push_back(inputVecs[index1]);
+        outputsVecs.push_back(inputVecs[index2]);
+        outputsVecs.push_back(inputVecs[index3]);
+    }
+    else if(size == 7 || size == 8)
+    {
+        int index1, index2, index3, index4;
+        
+        index1 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        
+        while(index1 == index2)
+            index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index3 == index1 &&
+              index3 == index2)
+            index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index4 == index1 &&
+              index4 == index2 &&
+              index4 == index3 )
+            index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        outputsVecs.push_back(inputVecs[index1]);
+        outputsVecs.push_back(inputVecs[index2]);
+        outputsVecs.push_back(inputVecs[index3]);
+        outputsVecs.push_back(inputVecs[index4]);
+    }
+    else if(size == 9)
+    {
+        int index1, index2, index3, index4,index5;
+        
+        index1 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index5 = CCRANDOM_0_1()*(inputVecs.size()-1);
+
+        while(index2 == index1)
+            index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index3 == index1 &&
+              index3 == index2)
+            index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index4 == index1 &&
+              index4 == index2 &&
+              index4 == index3)
+            index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index5 == index1 &&
+              index5 == index2 &&
+              index5 == index3 &&
+              index5 == index4)
+            
+            index5 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        outputsVecs.push_back(inputVecs[index1]);
+        outputsVecs.push_back(inputVecs[index2]);
+        outputsVecs.push_back(inputVecs[index3]);
+        outputsVecs.push_back(inputVecs[index4]);
+        outputsVecs.push_back(inputVecs[index5]);
+    }
+    else
+    {
+        int index1, index2, index3, index4, index5, index6;
+        index1 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index5 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        index6 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index2 == index1)
+            index2 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index3 == index1 &&
+              index3 == index2)
+            index3 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index4 == index1 &&
+              index4 == index2 &&
+              index4 == index3)
+            index4 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index5 == index1 &&
+              index5 == index2 &&
+              index5 == index3 &&
+              index5 == index4)
+            index5 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        while(index6 == index1 &&
+              index6 == index2 &&
+              index6 == index3 &&
+              index6 == index4 &&
+              index6 == index5 )
+            index6 = CCRANDOM_0_1()*(inputVecs.size()-1);
+        
+        outputsVecs.push_back(inputVecs[index1]);
+        outputsVecs.push_back(inputVecs[index2]);
+        outputsVecs.push_back(inputVecs[index3]);
+        outputsVecs.push_back(inputVecs[index4]);
+        outputsVecs.push_back(inputVecs[index5]);
+        outputsVecs.push_back(inputVecs[index6]);
+    }
+}
+
+
+void matchAlgorithm::playClearAccount(const colorSpriteEnum rc[ROW][COL],
+                                      std::vector<boxInfo>& propVecs,
+                                      std::vector<coord>& randomVecs)
+{
+    /*
+     注明：说明下，特殊方块就是战斗中出现的道具，在清算过程中，清算的过程为
+     1）消除特殊方块，并且产生相应作用
+     2）消除“5色刷新”特殊方块（如果有，那一定在特殊方块最后消除）
+     3）消除5-10个普通方块
+     */
+    
+    bool boolbox[ROW][COL];
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            boolbox[r][c] = false;
+        }
+    }
+    
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            colorSpriteEnum cs = rc[r][c];
+            
+            if(cs == kPropAutoClear ||
+               cs == kPropBoomb ||
+               cs == kPropCorssBoomb ||
+               cs == kPropFivePlaces ||
+               cs == kPropRandomBoom ||
+               cs == kPropSameColorBoomb)
+            {
+                boxInfo bi;
+                bi.cs = cs;
+                bi.r = r;
+                bi.c = c;
+                propVecs.push_back(bi);
+                
+                boolbox[r][c] = true;
+            }
+        }
+    }
+    
+    int r1 = CCRANDOM_0_1()*(ROW-1);
+    int c1 = CCRANDOM_0_1()*(COL-1);
+    while(boolbox[r1][c1])
+    {
+        r1 = CCRANDOM_0_1()*(ROW-1);
+        c1 = CCRANDOM_0_1()*(COL-1);
+    }
+    boolbox[r1][c1] = true;
+    
+    int r2 = CCRANDOM_0_1()*(ROW-1);
+    int c2 = CCRANDOM_0_1()*(COL-1);
+    while(boolbox[r2][c2])
+    {
+        r2 = CCRANDOM_0_1()*(ROW-1);
+        c2 = CCRANDOM_0_1()*(COL-1);
+    }
+    boolbox[r2][c2] = true;
+    
+    int r3 = CCRANDOM_0_1()*(ROW-1);
+    int c3 = CCRANDOM_0_1()*(COL-1);
+    while(boolbox[r3][c3])
+    {
+        r3 = CCRANDOM_0_1()*(ROW-1);
+        c3 = CCRANDOM_0_1()*(COL-1);
+    }
+    boolbox[r3][c3] = true;
+    
+    int r4 = CCRANDOM_0_1()*(ROW-1);
+    int c4 = CCRANDOM_0_1()*(COL-1);
+    while(boolbox[r4][c4])
+    {
+        r4 = CCRANDOM_0_1()*(ROW-1);
+        c4 = CCRANDOM_0_1()*(COL-1);
+    }
+    boolbox[r4][c4] = true;
+    
+    int r5 = CCRANDOM_0_1()*(ROW-1);
+    int c5 = CCRANDOM_0_1()*(COL-1);
+    while(boolbox[r5][c5])
+    {
+        r5 = CCRANDOM_0_1()*(ROW-1);
+        c5 = CCRANDOM_0_1()*(COL-1);
+    }
+    boolbox[r5][c5] = true;
+    
+    randomVecs.push_back(coord(r1,c1));
+    randomVecs.push_back(coord(r2,c2));
+    randomVecs.push_back(coord(r3,c3));
+    randomVecs.push_back(coord(r4,c4));
+    randomVecs.push_back(coord(r5,c5));
+    
+}
+
+
+
+
 

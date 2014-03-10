@@ -21,6 +21,7 @@
 #include "Pet.h"
 #include "AnimationUtil.h"
 #include "Prop.h"
+#include "Attack.h"
 
 using namespace cocostudio;
 
@@ -87,8 +88,9 @@ void match::update(float delta)
         
         if(_timeBarLabelNum <= 0)
         {
+            unscheduleUpdate();
+            _pCoreMatch->playClearAccount();
             //popupLayer();
-            //unscheduleUpdate();
         }
     }
 }
@@ -102,17 +104,6 @@ bool match::init()
     }
     
     auto s = Director::getInstance()->getWinSize();
-    
-    
-   /* //remove sigle resource
-    ArmatureDataManager::getInstance()->removeArmatureFileInfo("Export/dongzuo.ExportJson");
-    //load resource directly
-    ArmatureDataManager::getInstance()->addArmatureFileInfo("Export/dongzuo.ExportJson");
-    Armature *armature = Armature::create("dongzuo");
-    armature->getAnimation()->playWithIndex(0);
-    armature->setPosition(Point(s.width/2,s.height/2));
-    addChild(armature);
-    return true;*/
     
     _pCoreMatch = new coreMatch();
     _pCoreMatch->init();
@@ -179,9 +170,9 @@ void match::onTouchMoved(Touch* touch, Event* event)
 void match::onTouchEnded(Touch* touch, Event* event)
 {
     _pCoreMatch->onTouch(touch);
-    //auto emitter = ParticleSystemQuad::create("effect/henxiang_baozha.plist");
-    //addChild(emitter);
-    //emitter->setPosition(touch->getLocation());
+    /*auto emitter = ParticleSystemQuad::create("effect/henxiang_baozha.plist");
+    addChild(emitter);
+    emitter->setPosition(touch->getLocation());*/
     return;
 }
 
@@ -194,6 +185,9 @@ bool match::onContactBegin(EventCustom *event, const PhysicsContact& contact)
     {
         //CCLOG("onContactBegin %d, %d", b1->getCollisionBitmask(), b2->getCollisionBitmask());
         _pMonster->hurt();
+        Attack* attack = (Attack*)b1->getNode();
+        attack->killMe();
+        
         this->addEneryBar(2);
     }
     return true;
@@ -280,6 +274,7 @@ void match::popupLayer()
 
 void match::setupPauseButton()
 {
+    /*
     const char *normal = "CloseNormal.png";
     const char* pressed = "circle.png";
     
@@ -292,7 +287,7 @@ void match::setupPauseButton()
     button->setPosition(Point(s.width - button->getContentSize().width,
                               s.height- button->getContentSize().height));
     
-    button->addTouchEventListener(this, toucheventselector(match::pauseButtonEvent));
+    button->addTouchEventListener(this, toucheventselector(match::pauseButtonEvent));*/
     return;
 }
 

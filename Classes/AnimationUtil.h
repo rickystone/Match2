@@ -18,7 +18,8 @@ using namespace gui;
 class AnimationUtil
 {
 public:
-    static Animate* pauseAnimationFromFrame();
+    static Animate* createAnimateFromFile(const char* filename, int count, float unitTime);
+    static Animate* createAnimateFromFrame(const char* filename, int count, float unitTime);
     static Button* createButton(const char* normal, const char* pressed);
     static Label* createLabel(const char* ttf, int fontsize);
 };

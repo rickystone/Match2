@@ -19,6 +19,15 @@
 
 #define MOVEDURATION  0.1
 #define PARTICLEDURATION 0.2
+#define BOXDEADDURATION  0.02
+
+#define BOXSCALEDURATION  0.3
+
+//产生子弹的间隔时间
+#define BLLUETSTEPTIME 0.25f
+
+//子弹特效动画时间
+#define  BULLETFRAMEANIMATIONTIEM 0.08
 
 #define random_range(low,high) (arc4random()%(high-low+1))+low
 #define frandom (float)arc4random()/UINT64_C(0x100000000)
@@ -71,7 +80,6 @@ typedef enum {
     kPet,
 }pet_enum;
 
-
 typedef struct coord
 {
     int r, c;
@@ -84,13 +92,12 @@ typedef struct coord
     }
 } coord;
 
-///show what the box is what kind of box
-static colorSpriteEnum _rc[ROW][COL];
+typedef struct boxInfo
+{
+    int r;
+    int c;
+    colorSpriteEnum cs;
+} boxInfo;
 
-//show box position
-static cocos2d::Point _boxesPos[ROW][COL];
-
-//box house
-static cocos2d::Sprite* _rcSprites[ROW][COL];
 
 #endif

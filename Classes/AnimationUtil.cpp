@@ -8,17 +8,35 @@
 
 #include "AnimationUtil.h"
 
-Animate* AnimationUtil::pauseAnimationFromFrame()
+Animate* AnimationUtil::createAnimateFromFile(const char* filename, int count, float unitTime)
 {
     Animation* animation = Animation::create();
-    for(int i=1;i<15;i++)
+    for(int i=1; i<=count; i++)
     {
-        char szName[100] = {0};
-        sprintf(szName, "Images/grossini_dance_%02d.png", i);
-        animation->addSpriteFrameWithFile(szName);
+        char szname[100] = {0};
+        std::string ss = filename;
+        ss += "_%01d.png";
+        sprintf(szname, ss.c_str(), i);
+        animation->addSpriteFrameWithFile(szname);
     }
-    //should last 2.8 seconds. And there are 14 frames.
-    animation->setDelayPerUnit(2.8f / 14.0f);
+    animation->setDelayPerUnit(unitTime);
+    animation->setRestoreOriginalFrame(true);
+    Animate* action = Animate::create(animation);
+    return action;
+}
+
+Animate* AnimationUtil::createAnimateFromFrame(const char* filename, int count, float unitTime)
+{
+    Animation* animation = Animation::create();
+    for(int i=1; i<=count; i++)
+    {
+        char szname[100] = {0};
+        std::string ss = filename;
+        ss += "_%01d.png";
+        sprintf(szname, ss.c_str(), i);
+        animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(szname));
+    }
+    animation->setDelayPerUnit(unitTime);
     animation->setRestoreOriginalFrame(true);
     Animate* action = Animate::create(animation);
     return action;

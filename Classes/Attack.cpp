@@ -28,8 +28,19 @@ Attack* Attack::create()
 
 void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
 {
-    auto sprite = Sprite::create("matchBox/s_tudou_b.png");
-    sprite->setScale(0.25f);
+    auto sprite = Sprite::create("animation/energy_ball01.png");
+    Animation* animation = Animation::create();
+    for(int i=1;i<=4;i++)
+    {
+        char szName[100] = {0};
+        sprintf(szName, "animation/energy_ball%02d.png", i);
+        animation->addSpriteFrameWithFile(szName);
+    }
+    //should last 2.8 seconds. And there are 14 frames.
+    animation->setDelayPerUnit(0.08);
+    animation->setRestoreOriginalFrame(true);
+    Animate* action = Animate::create(animation);
+    sprite->runAction(RepeatForever::create(action));
     
     auto body = PhysicsBody::createCircle(sprite->getContentSize().width/2);
     body->setCategoryBitmask(0x04);
@@ -38,39 +49,34 @@ void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
     body->setRotationEnable(true);
     sprite->setPhysicsBody(body);
     
-    
-    /*
-    Point offset  = ccpSub(destination, startPoint);
-    float   ratio = offset.y/offset.x;
-    //calc rotation
-    float rotationRadians = CC_DEGREES_TO_RADIANS(ratio);
-    //vector for rotation
-    Point directionVector = Point(sinf(rotationRadians), cosf(rotationRadians));
-    
-    Point force = ccpMult(directionVector, 5);
-    body->applyImpulse(force);
-    body->setVelocity(force);
-    this->addChild(sprite);
-    sprite->setPosition(startPoint);*/
-    
-    ccBezierConfig bezier;
+    float speed = 300;
+    float distance = startPoint.getDistance(destination);
+    float duration = distance/speed;
+
+    /*ccBezierConfig bezier;
     bezier.controlPoint_1 = startPoint;
     bezier.endPosition = destination;
     bezier.controlPoint_2 = Point(frandom_range(startPoint.x, destination.y), frandom_range(startPoint.y, destination.y));
-    auto bezierTo = BezierTo::create(0.5, bezier);
+    auto bezierTo = BezierTo::create(duration, bezier);*/
     
-    auto bind1  = CallFunc::create( std::bind(&Attack::stopBulletSpeed, this, sprite));
-    auto s1 = Sequence::create(bezierTo, bind1, NULL);
-    auto fadeout = FadeOut::create(1.0f);
+    sprite->setScale(0.01f);
+    auto scaleto = ScaleTo::create(BOXSCALEDURATION, 1.0f);
+    auto moveto = MoveTo::create(duration, destination);
     auto removeSelf = RemoveSelf::create();
-    auto seq = Sequence::create(s1,DelayTime::create(0.2f),fadeout,removeSelf,NULL);
+    
+    auto rotate = RotateBy::create(1.0, 360);
+    sprite->runAction(RepeatForever::create(rotate));
+    
+    auto seq = Sequence::create(scaleto,moveto,NULL);
     sprite->runAction(seq);
     this->addChild(sprite);
     sprite->setPosition(startPoint);
 }
 
-void Attack::stopBulletSpeed(Sprite* bullet)
+void Attack::killMe()
 {
-    //bullet->getPhysicsBody()->setVelocity(Vect(0,0));
-    ///auto rotate = RotateBy::create(1.5, 360);
+    CCLOG("attack kill me");
+    auto delay = DelayTime::create(1.5);
+    auto seq = Sequence::create(delay, RemoveSelf::create(), NULL);
+    this->runAction(seq);
 }

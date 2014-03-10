@@ -7,16 +7,14 @@
 //
 
 #include "monster.h"
-#include "cocostudio/CocoStudio.h"
-#include "gui/CocosGUI.h"
 #include "util.h"
 
 USING_NS_CC;
-using namespace cocostudio;
 using namespace gui;
 
 monster::monster() :
-_monster_pos(-1,-1)
+_monster_pos(-1,-1),
+_pMonsterArmature(nullptr)
 {}
 
 monster::~monster() {}
@@ -37,32 +35,45 @@ bool monster::init()
 
 void monster::hurt()
 {
-    auto sprite_monster = (Sprite*)getChildByTag(0);
-    auto scaleto = ScaleTo::create(0.5f, 1.3);
-    auto scaleto_back = ScaleTo::create(0.5f, 1.0f);
-    sprite_monster->runAction(Sequence::create(scaleto, scaleto_back, NULL));
+    CCLOG("monster hurt");
+    auto monster = (Sprite*)getChildByTag(0);
+    monster->stopAllActions();
+    monster->setScale(1.0f);
+    
+    auto scaleto = ScaleTo::create(0.2f, 1.3);
+    auto scaleto_back = ScaleTo::create(0.2f, 1.0f);
+    monster->runAction(Sequence::create(scaleto, scaleto_back, NULL));
 }
 
 void monster::setupMonster()
 {
     auto s = Director::getInstance()->getWinSize();
-    auto sprite = Sprite::create("card/card_dog_face_1.png");
-    addChild(sprite,0,kMonster);
+    //remove sigle resource
+    ArmatureDataManager::getInstance()->removeArmatureFileInfo("Export/dongzuo.ExportJson");
+    //load resource directly
+    ArmatureDataManager::getInstance()->addArmatureFileInfo("Export/dongzuo.ExportJson");
+    _pMonsterArmature = Armature::create("dongzuo");
+    _pMonsterArmature->getAnimation()->playWithIndex(0);
+    addChild(_pMonsterArmature,0,0);
+    _pMonsterArmature->setPosition(Point(_pMonsterArmature->getContentSize().width,
+                                s.height - _pMonsterArmature->getContentSize().height-50));
     
-    auto body = PhysicsBody::createCircle(sprite->getContentSize().width/3);
+    _pMonsterArmature->setPosition(Point(s.width*0.8,
+                              s.height - _pMonsterArmature->getContentSize().height-50));
+    _monster_pos = _pMonsterArmature->getPosition();
+    
+
+    auto body = PhysicsBody::createCircle(_pMonsterArmature->getContentSize().width/3);
     body->setCategoryBitmask(0x01);
     body->setCollisionBitmask(0x01);
     body->setDynamic(false);
-    sprite->setPhysicsBody(body);
-    sprite->setPosition(Point(s.width*0.8,
-                              s.height - sprite->getContentSize().height));
-    _monster_pos = sprite->getPosition();
-    
+    _pMonsterArmature->setPhysicsBody(body);
+
     //setup monster hp
     auto bkbar = Sprite::create("slidbar.png");
     bkbar->setColor(Color3B::GRAY);
     addChild(bkbar,0,kMonsterHp);
-    bkbar->setPosition(Point(Point(_monster_pos.x, _monster_pos.y - sprite->getContentSize().height/2-5)));
+    bkbar->setPosition(Point(Point(_monster_pos.x, _monster_pos.y - _pMonsterArmature->getContentSize().height/2-5)));
     
     LoadingBar* monsterHpBar = LoadingBar::create();
     monsterHpBar->setTag(0);
@@ -72,7 +83,4 @@ void monster::setupMonster()
     monsterHpBar->setPosition(Point(bkbar->getContentSize().width/2, bkbar->getContentSize().height/2));
     bkbar->addChild(monsterHpBar,0,0);
 }
-
-//today has little of been mad.!!!!!!!
-
 

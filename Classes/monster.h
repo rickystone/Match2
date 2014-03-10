@@ -10,6 +10,11 @@
 #define Match_monster_h
 
 #include "cocos2d.h"
+#include "gui/CocosGUI.h"
+#include "cocostudio/CocoStudio.h"
+
+using namespace cocostudio;
+
 
 class monster : public cocos2d::Node
 {
@@ -21,9 +26,10 @@ public:
     
     CC_SYNTHESIZE(cocos2d::Point, _monster_pos, monster_pos);
     
-    void hurt();
+    void hurt();    
 private:
     void setupMonster();
+    Armature*  _pMonsterArmature;
 };
 
 #endif

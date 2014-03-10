@@ -9,6 +9,11 @@
 #include "Pet.h"
 #include "util.h"
 
+
+#include "cocostudio/CocoStudio.h"
+
+using namespace cocostudio;
+
 Pet::Pet() {}
 
 Pet::~Pet() {}
@@ -30,10 +35,16 @@ bool Pet::init()
 void Pet::setupPet()
 {
     auto s = Director::getInstance()->getWinSize();
-    auto sprite = Sprite::create("card/card_dog_face_2.png");
-    addChild(sprite,0,kPet);
-    sprite->setPosition(Point(sprite->getContentSize().width + 60,
-                              s.height - sprite->getContentSize().height));
+    
+    //remove sigle resource
+    ArmatureDataManager::getInstance()->removeArmatureFileInfo("Export/dongzuo.ExportJson");
+    //load resource directly
+    ArmatureDataManager::getInstance()->addArmatureFileInfo("Export/dongzuo.ExportJson");
+    Armature *armature = Armature::create("dongzuo");
+    armature->getAnimation()->playWithIndex(0);
+    addChild(armature);
+    armature->setPosition(Point(armature->getContentSize().width,
+                              s.height - armature->getContentSize().height-50));
 }
 
 void Pet::removePet()

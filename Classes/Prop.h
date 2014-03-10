@@ -25,7 +25,7 @@ public:
     void setupProp();
     
     //自动胶囊
-    static void propAutoBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<std::vector<coord>>& cs);
+    static void propAutoBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<coord>& vecs);
     
     //炸弹胶囊
     static void propBoomb(const colorSpriteEnum rc[ROW][COL], std::vector<coord>& vecs, int r, int c);

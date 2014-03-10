@@ -22,7 +22,7 @@ public:
     static Attack* create();
     
     void shootBullet(int r, int c,  Point destinationk, Point startPoint);
-    void stopBulletSpeed(Sprite* bullet);
+    void killMe();
 };
 
 #endif
