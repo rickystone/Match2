@@ -7,11 +7,12 @@
 //
 
 #include "mainEnter.h"
+#include "PropBuyUI.h"
 #include "match.h"
+#include "Logo.h"
 
 #include "extensions/cocos-ext.h"
 #include "cocostudio/CocoStudio.h"
-
 using namespace cocostudio;
 
 Scene* mainEnter::createScene()
@@ -32,6 +33,14 @@ mainEnter::mainEnter()
 mainEnter::~mainEnter()
 {}
 
+void mainEnter::setupJson()
+{
+    Layer* uiLayer = Layer::create();
+    Layout *myLayout = dynamic_cast<Layout*>(cocostudio::GUIReader::getInstance()->widgetFromJsonFile("UI/daojulan.json"));
+    uiLayer->addChild(myLayout);
+    this->addChild(uiLayer);
+}
+
 bool mainEnter::init()
 {
     // 1. super init first
@@ -39,41 +48,13 @@ bool mainEnter::init()
         return false;
     }
     
+    //setupJson();
     setupBackGround();
     setupButton();
     
-////    Layer* uiLayer = Layer::create();
-////    Layout *myLayout = dynamic_cast<Layout*>(cocostudio::GUIReader::getInstance()->widgetFromJsonFile("UI/zhandoujiemian.json"));
-////    uiLayer->addChild(myLayout);
-////    this->addChild(uiLayer);
-//    
-//    //UIButton* startBtn = dynamic_cast<UIButton*>(m_layout->getChildByTag(UI_BUTTON_START));
-//    //Button* left_button = dynamic_cast<Button*>(myLayout->getChildByTag(59));
-//    //Button* left_button = dynamic_cast<Button*>(myLayout->getChildByName("Button_zanting_0"));
-//    //left_button->addTouchEventListener(this, toucheventselector(mainEnter::previousCallback));
-//
-//    Layer *_uiLayer = Layer::create();
-//    addChild(_uiLayer);
-//    
-//    Layout *_widget = dynamic_cast<Layout*>(cocostudio::GUIReader::getInstance()->widgetFromJsonFile("UI/t1_1.json"));
-//    _uiLayer->addChild(_widget);
-//    
-//    Size screenSize = Director::getInstance()->getWinSize();
-//    Size rootSize = _widget->getSize();
-//    _uiLayer->setPosition(Point((screenSize.width - rootSize.width) / 2,
-//                                (screenSize.height - rootSize.height) / 2));
-//    
-//    //auto root = (Layout*)_widget->getChildren().at(0);
-//    //Layout* root = static_cast<Layout*>(_uiLayer->getChildByTag(0));
-//    
-//    
-//    Button* left_button = dynamic_cast<Button*>(_widget->getChildByName("Button_257"));
-//    //left_button->addTouchEventListener(this, toucheventselector(mainEnter::previousCallback));
-    
-	// 注册回调
+    //注册回调
     return true;
 }
-
 
 void mainEnter::previousCallback(Object* sender, TouchEventType type)
 {
@@ -142,31 +123,12 @@ void mainEnter::touchEvent(Object *pSender, TouchEventType type)
 void mainEnter::playScene()
 {
     float duration = 0.5f;
-    auto matchScene = match::createScene();
-    auto scene = TransitionFade::create(duration, matchScene, Color3B::WHITE);
+    auto layer = Logo::createScene();
+    auto scene = TransitionFade::create(duration, layer, Color3B::WHITE);
     if (scene)
     {
         Director::getInstance()->replaceScene(scene);
     }
 }
-
-
-
-/*
-_widget = dynamic_cast<Layout*>(cocostudio::GUIReader::getInstance()->widgetFromJsonFile("cocosgui/UITest/UITest.json"));
-_uiLayer->addChild(_widget);
-
-Layout* root = static_cast<Layout*>(_uiLayer->getChildByTag(81));
-
-
-
-Button* left_button = dynamic_cast<Button*>(root->getChildByName("left_Button"));
-left_button->addTouchEventListener(this, toucheventselector(UIScene::previousCallback));
-
-Button* middle_button = dynamic_cast<Button*>(root->getChildByName("middle_Button"));
-middle_button->addTouchEventListener(this, toucheventselector(UIScene::restartCallback));
-
-Button* right_button = dynamic_cast<Button*>(root->getChildByName("right_Button"));
-right_button->addTouchEventListener(this, toucheventselector(UIScene::nextCallback));*/
 
 

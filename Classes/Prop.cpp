@@ -284,7 +284,6 @@ void Prop::propRandomBoomNBoxes(const colorSpriteEnum rc[ROW][COL], std::vector<
     }
 }
 
-
 void Prop::WalkSameColor(int r, int c, bool boolbxo[ROW][COL], colorSpriteEnum newRc[ROW][COL], colorSpriteEnum curCS, int cnt)
 {
     std::vector<coord> vecs;
@@ -392,7 +391,6 @@ void Prop::WalkSameColor(int r, int c, bool boolbxo[ROW][COL], colorSpriteEnum n
             newRc[r-1][c-1] = curCS;
             boolbxo[r-1][c-1] = true;
         }
-        
         
         if(c+1 >=0 && r-1 <ROW && !boolbxo[r-1][c+1] && vecs.size() < cnt)
         {

@@ -29,9 +29,6 @@ public:
     
     void onTouch(Touch* touch);
     
-    /**
-     * Visits this node's children and draw them recursively.
-     */
     virtual void visit();
     
 private:
@@ -40,8 +37,16 @@ private:
     void update(float delta);
     
     void loadPlist();
+    
+    //set up all boxes position
+    void setupBoxesPos();
+    
     void createBoxes();
+    
     void createItemBox(int r, int c, colorSpriteEnum ce);
+    
+    //read info from default value, construct new match boxes
+    void constructBoxes(const colorSpriteEnum rc[ROW][COL]);
     
     //set one of box to be gray
     void setupGraySprite(int r, int c);
@@ -76,10 +81,6 @@ private:
             
     const char* getspriteFrameFileName(colorSpriteEnum ce);
     
-    bool findOneBoxAndMakeItRun(int r, int c);
-    
-    bool recreateOneBox(colorSpriteEnum cs, int r, int c);
-    
     void resetCanbeTouch();
         
     //enter game crazy status
@@ -99,7 +100,9 @@ private:
     
     CC_SYNTHESIZE(Point, _monster_Pos, monster_Pos)
     
-    void excuteMatchFunc (std::vector<coord>& colleciton, colorSpriteEnum cs, const char* particleFileName ="", int propR=0, int propC=0);
+    void excuteMatchFunc (std::vector<coord>& colleciton, colorSpriteEnum cs,
+                          const char* particleFileName ="", int propR=0, int propC=0);
+    
     void playPropAutoClear(int r, int c);
     void playPropBoomb(int r, int c);
     void playPropSameColorBoomb(int r ,int c);
@@ -113,8 +116,10 @@ private:
     void playBulletEffect(int r, int c);
     
     void playClearAccount();
-    void popTimeOver();
-    void buttonCallback(cocos2d::Node *pNode);
+    void playBoxesSmile();
+    void transToMainScene();
+    
+    
 private:
     SpriteBatchNode* _batchnode;
     
@@ -158,3 +163,4 @@ private:
 };
 
 #endif
+

@@ -24,7 +24,7 @@
 #define BOXSCALEDURATION  0.3
 
 //产生子弹的间隔时间
-#define BLLUETSTEPTIME 0.25f
+#define BLLUETSTEPTIME 1.0f
 
 //子弹特效动画时间
 #define  BULLETFRAMEANIMATIONTIEM 0.08
@@ -35,7 +35,19 @@
 
 #include "cocos2d.h"
 
-enum  colorSpriteEnum{
+/*游戏时间增加3秒
+ 游戏时间增加5秒
+ 清算消除方块积分1.5倍
+ 清算消除方块积分2倍
+ 完成后积分增加3%
+ 完成后积分增加5%
+ 完成后积分增加10%
+ 从上方落下特殊方块，点击后，以该元素为基础，消除十字元素方块
+ 从上方落下特殊方块，点击后，场景刷新为5种颜色区块
+ 从上方落下特殊方块，点击后，包括该方块在内，随机产生20个方块的爆炸
+ */
+
+enum colorSpriteEnum{
     
     kA,                   //元素A
     kB,                   //元素B
@@ -50,6 +62,16 @@ enum  colorSpriteEnum{
     kPropCorssBoomb,      //十字炸弹
     kPropRandomBoom,      //随机炸弹
     kPropFivePlaces,      //5色刷新
+    
+    kPropGameTimeAddThreeSec,
+    kPropGameTimeAddFiveSec,
+    kPropScoreDouble1Point5,
+    kPropScoreDouble2,
+    kPropScore3Percent,
+    kPropScore5Percent,
+    kPropScore10Percent,
+    
+    kPropBaiXiang,
     
     kUnSigned,
 };
@@ -99,5 +121,6 @@ typedef struct boxInfo
     colorSpriteEnum cs;
 } boxInfo;
 
+static std::map<colorSpriteEnum, int> static_propMap;
 
 #endif

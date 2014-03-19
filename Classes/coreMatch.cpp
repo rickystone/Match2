@@ -11,8 +11,8 @@
 #include "Prop.h"
 #include "matchAlgorithm.h"
 #include "AnimationUtil.h"
-#include "PopupLayer.h"
-#include "mainEnter.h"
+#include "streamGame.h"
+#include "accountUI.h"
 
 bool  coordCompare(const coord& n1, const coord& n2)
 {
@@ -53,7 +53,7 @@ coreMatch::coreMatch()
   _bShowTip(false),
   _continueAddTime(0),
   _continueTimes(0),
-  _kRenderTextureCount(6),
+  _kRenderTextureCount(2),
   _currentRenderTextureIndex(0),
   _propcount(0),
   _updatePropTime(0),
@@ -64,6 +64,7 @@ coreMatch::coreMatch()
 
 coreMatch::~coreMatch()
 {
+    CCLOG("corematch destructor!");
 }
 
 coreMatch* coreMatch::create()
@@ -87,7 +88,7 @@ bool coreMatch::init()
     setupMotionBlur();
     loadPlist();
     createBoxes();
-    scheduleUpdate();    
+    scheduleUpdate();
     return true;
 }
 
@@ -106,25 +107,22 @@ void coreMatch::loadPlist()
 {
     auto s = Director::getInstance()->getWinSize();
     SpriteFrameCache* cache = SpriteFrameCache::getInstance();
-    cache->addSpriteFramesWithFile("matchBox/item.plist", "matchBox/item.png");
-    _batchnode = SpriteBatchNode::create("matchBox/item.png");
+    cache->addSpriteFramesWithFile("matchBox/item-sd.plist", "matchBox/item-sd.png");
+    _batchnode = SpriteBatchNode::create("matchBox/item-sd.png");
     this->addChild(_batchnode,0,10);
     
     auto sprite = Sprite::createWithSpriteFrameName("s_fanqie.png");
     auto size = sprite->getContentSize();
-    _batchnode->setPosition(Point(s.width/2 - size.width*ROW/2,size.height*2));
+    _batchnode->setPosition(Point(s.width/2 - size.width*ROW/2, size.height/2));
 }
 
-//create boxes when enter game, all box be added into batchonde,
-//all boxed can be random produced
-void coreMatch::createBoxes()
+void coreMatch::setupBoxesPos()
 {
     auto sprite = Sprite::createWithSpriteFrameName("s_fanqie.png");
     auto size = sprite->getContentSize();
-    _batchnode->removeAllChildrenWithCleanup(true);
-    
     int space = 1;
     Point start = Point(0,0);
+    
     for(int r=0; r<ROW; r++)
     {
         Point prevPt = Point(start.x + size.width/2+space, start.y + r*size.height + size.height/2 + 2);
@@ -134,6 +132,14 @@ void coreMatch::createBoxes()
             prevPt = Point(prevPt.x + size.width+ space, prevPt.y);
         }
     }
+}
+
+//create boxes when enter game, all box be added into batchonde,
+//all boxed can be random produced
+void coreMatch::createBoxes()
+{
+    _batchnode->removeAllChildrenWithCleanup(true);
+    setupBoxesPos();
     
     for(int r=0; r<ROW; r++){
         for(int c=0; c<COL; c++){
@@ -144,6 +150,27 @@ void coreMatch::createBoxes()
         }
     }
 }
+
+void coreMatch::constructBoxes(const colorSpriteEnum rc[ROW][COL])
+{
+    for(int r=0; r<ROW; r++)
+    {
+        for(int c=0; c<COL; c++)
+        {
+            _rc[r][c] = rc[r][c];
+        }
+    }
+    
+    for(int r=0; r<ROW; r++)
+    {
+        for(int c=0; c<COL; c++)
+        {
+            colorSpriteEnum cs = rc[r][c];
+            createItemBox(r,c,cs);
+        }
+    }
+}
+
 
 void coreMatch::createItemBox(int r, int c, colorSpriteEnum ce)
 {
@@ -163,7 +190,6 @@ void coreMatch::createItemBox(int r, int c, colorSpriteEnum ce)
     _batchnode->addChild(sprite);
     return;
 }
-
 
 //make one guy to be grey
 void coreMatch::setupGraySprite(int r, int c)
@@ -214,83 +240,53 @@ void coreMatch::touchOneBox(cocos2d::Touch *touch)
                 if(contain)
                 {
                     clearGraySprites();
-                    switch (rc) {
-                            
-                        //自动胶囊
-                        case kPropAutoClear:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "自动胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropAutoClear, this, r, c));
-                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),DelayTime::create(0.3), play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                            
-                        //炸弹胶囊
-                        case kPropBoomb:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "炸弹胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropBoomb, this, r, c));
-                            auto seq = Sequence::create(flash, DelayTime::create(1.0f), play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                        
-                        //同色胶囊
-                        case kPropSameColorBoomb:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "同色胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropSameColorBoomb, this, r, c));
-                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                            
-                        //十字炸弹
-                        case kPropCorssBoomb:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "十字胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropCrossBoomb, this, r, c));
-                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                            
-                        //随机炸弹
-                        case kPropRandomBoom:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "随机胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropRandomBoomb, this, r, c));
-                            auto seq = Sequence::create(flash,DelayTime::create(1.0f), play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                            
-                        //5色刷新
-                        case kPropFivePlaces:
-                        {
-                            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "5色胶囊", 30));
-                            auto play = CallFunc::create( std::bind(&coreMatch::playPropFiveColorBoomb, this, r, c));
-                            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-                            this->runAction(seq);
-                        }
-                            break;
-                            
-                        case kA:
-                        case kB:
-                        case kC:
-                        case kD:
-                        case kE:
-                            this->playNormalBox(r,c);
-                            break;
-                        default:
-                            break;
+                    if(rc == kPropAutoClear)
+                    {
+                        this->playPropAutoClear(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kPropBoomb)
+                    {
+                        this->playPropBoomb(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kPropCorssBoomb)
+                    {
+                        this->playPropCrossBoomb(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kPropFivePlaces)
+                    {
+                        this->playPropFiveColorBoomb(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kPropRandomBoom)
+                    {
+                        this->playPropRandomBoomb(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kPropSameColorBoomb)
+                    {
+                        this->playPropSameColorBoomb(r, c);
+                        return;
+                    }
+                    
+                    else if(rc == kA || rc == kB || rc == kC || rc == kD || rc == kE)
+                    {
+                        this->playNormalBox(r, c);
+                        return;
                     }
                     return;
                 }
             }
         }
     }
+    
     resetCanbeTouch();
 }
 
@@ -510,10 +506,10 @@ void coreMatch::boxDie(int r, int c)
     }
     
     Point pt = _batchnode->convertToWorldSpace(_boxesPos[r][c]);
-    auto emitter = ParticleSystemQuad::create("effect/grapes_splurt.plist");
+    auto emitter = ParticleSystemQuad::create("effect/baoxiang.plist");
     addChild(emitter);
     emitter->setPosition(pt);
-    emitter->setScale(0.5f);
+    //emitter->setScale(0.5f);
     //emitter->setDuration(0.01);
     
     auto  seq = Sequence::create(DelayTime::create(0.5), RemoveSelf::create(), NULL);
@@ -598,7 +594,6 @@ void coreMatch::randomShowMatchTip()
 
                     tip->runAction(repeat1);
                     tip->runAction(repeat2);
-
                 }
                 return;
             }
@@ -614,7 +609,6 @@ void coreMatch::resetCanbeTouch()
     _updateTipTime = 0.0f;
     _updateGrayTime = 0.0f;
     _updateBarTime = 0.0f;
-    clearMatchTips();
     
     if(!matchAlgorithm::checkIsHaveProps(_rc))
     {
@@ -727,13 +721,10 @@ void coreMatch::excuteMatchFunc (std::vector<coord>& collections, colorSpriteEnu
                                  const char* particleFileName,
                                  int propR, int propC)
 {
-    
-    std::sort(std::begin(collections), std::end(collections), coordCompare );
-
+    std::sort(std::begin(collections), std::end(collections), coordCompare);
     //1:计算攻击坐标集合
     std::vector<coord> outputVecs;
     matchAlgorithm::computerAttackCoords(collections, outputVecs);
-    
     
     Vector<FiniteTimeAction*> actions;
     
@@ -778,6 +769,9 @@ void coreMatch::excuteMatchFunc (std::vector<coord>& collections, colorSpriteEnu
     
     //等待元素移动完成
     actions.pushBack(DelayTime::create(MOVEDURATION));
+    
+    auto cleartip = CallFunc::create( std::bind( &coreMatch::clearMatchTips,this));
+    actions.pushBack(cleartip);
     
     //重新设置系统
     actions.pushBack(reset);
@@ -935,16 +929,16 @@ void coreMatch::playBulletEffect(int r, int c)
     auto boxsprite = _rcSprites[r][c];
     if(boxsprite)
     {
-        auto sprite = Sprite::createWithSpriteFrameName("attack_1.png");
+        auto sprite = Sprite::createWithSpriteFrameName("hurt_1.png");
         boxsprite->addChild(sprite);
         sprite->setScale(0.5f);
         sprite->setPosition(Point(boxsprite->getContentSize().width/2, boxsprite->getContentSize().height/2));
         
         Animation* animation = Animation::create();
-        for(int i=2;i<8;i++)
+        for(int i=2;i<4;i++)
         {
             char szName[100] = {0};
-            sprintf(szName, "attack_%01d.png", i);
+            sprintf(szName, "hurt_%01d.png", i);
             animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(szName));
         }
         
@@ -962,9 +956,9 @@ void coreMatch::playClearAccount()
     std::vector<boxInfo> propVecs;
     std::vector<coord> randomVecs;
     matchAlgorithm::playClearAccount(_rc, propVecs, randomVecs);
+    matchAlgorithm::stopBoxesSmile(_rc, _rcSprites);
     
-    auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "开始清算!!", 30));
-    allActions.pushBack(flash);
+    //auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "开始清算!!", 30));
     allActions.pushBack(DelayTime::create(1.0f));
     
     std::vector<boxInfo>::iterator it = propVecs.begin();
@@ -976,98 +970,66 @@ void coreMatch::playClearAccount()
         
         if(cs == kPropAutoClear)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "自动胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropAutoClear, this, r, c));
-            auto seq = Sequence::create(flash, DelayTime::create(1.0f),DelayTime::create(0.3), play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
         
         else if(cs == kPropBoomb)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "炸弹胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropBoomb, this, r, c));
-            auto seq = Sequence::create(flash, DelayTime::create(1.0f), play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
         
         else if(cs == kPropSameColorBoomb)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "同色胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropSameColorBoomb, this, r, c));
-            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
 
         else if(cs == kPropCorssBoomb)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "十字胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropCrossBoomb, this, r, c));
-            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
         
         else if(cs == kPropRandomBoom)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "随机胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropRandomBoomb, this, r, c));
-            auto seq = Sequence::create(flash,DelayTime::create(1.0f), play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
 
         else if(cs == kPropFivePlaces)
         {
-            auto flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "5色胶囊", 30));
             auto play = CallFunc::create( std::bind(&coreMatch::playPropFiveColorBoomb, this, r, c));
-            auto seq = Sequence::create(flash, DelayTime::create(1.0f),play, nullptr);
-            allActions.pushBack(seq);
+            allActions.pushBack(play);
             allActions.pushBack(DelayTime::create(1.0f));
         }
     }
     
-    flash = CallFunc::create( std::bind(&coreMatch::flashLabelTTF, this, "随机消除5个", 30));
-    auto randomFunc = CallFunc::create( std::bind(&coreMatch::excuteMatchFunc, this, randomVecs, kA,"", 0, 0));
-    allActions.pushBack(flash);
-    allActions.pushBack(DelayTime::create(1.0f));
+    auto randomFunc = CallFunc::create( std::bind(&coreMatch::excuteMatchFunc, this, randomVecs, kA, "", 0, 0));
     allActions.pushBack(randomFunc);
-    allActions.pushBack(DelayTime::create(1.0f));
+    allActions.pushBack(DelayTime::create(2.0f));
+    allActions.pushBack(CallFunc::create( std::bind(&coreMatch::transToMainScene, this)));
     
-    auto pop = CallFunc::create( std::bind(&coreMatch::popTimeOver, this));
-    allActions.pushBack(pop);
-
     auto seq = Sequence::create(allActions);
     this->runAction(seq);
     return;
 }
 
-void coreMatch::popTimeOver()
+void coreMatch::playBoxesSmile()
 {
-    //定义一个弹出层，传入一张背景图
-    PopupLayer* pl = PopupLayer::create("icon.png");
-    //ContentSize 是可选的设置，可以不设置，如果设置把它当作 9 图缩放
-    pl->setContentSize(Size(400, 350));
-    pl->setTitle("时间到了");
-    pl->setContentText("时间到啦", 20, 60, 250);
-    //设置回调函数，回调传回一个 CCNode 以获取 tag 判断点击的按钮
-    //这只是作为一种封装实现，如果使用 delegate 那就能够更灵活的控制参数了
-    pl->setCallbackFunc(this, callfuncN_selector(coreMatch::buttonCallback));
-    //添加按钮，设置图片，文字，tag 信息
-    pl->addButton("icon.png", "icon.png", "确定", 0);
-    //pl->addButton("popuplayer/pop_button.png", "popuplayer/pop_button.png", "取消", 1);
-    //添加到当前层
-    this->addChild(pl,100);
+    matchAlgorithm::playAllBoxSimle(_rc, _rcSprites);
 }
 
-
-void coreMatch::buttonCallback(cocos2d::Node *pNode)
+void coreMatch::transToMainScene()
 {
-    CCLOG("button call back. tag: %d", pNode->getTag());
     float duration = 0.5f;
-    auto mainScene = mainEnter::createScene();
+    auto mainScene = accountUI::createScene();
     auto scene = TransitionFade::create(duration, mainScene, Color3B::WHITE);
     if (scene)
     {
@@ -1111,7 +1073,7 @@ void coreMatch::update(float delta)
     
     //update prop
     _updatePropTime += delta;
-    if(_updatePropTime >= 5)
+    if(_updatePropTime >= 15)
     {
         _updatePropTime = 0;
         _bProduceProp = true;

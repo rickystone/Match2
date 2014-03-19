@@ -13,15 +13,16 @@
 #include "extensions/cocos-ext.h"
 #include "cocostudio/CocoStudio.h"
 #include "ShaderSprite.h"
-#include "PopupLayer.h"
 #include "mainEnter.h"
-#include "pauseLayer.h"
 #include "coreMatch.h"
 #include "monster.h"
 #include "Pet.h"
 #include "AnimationUtil.h"
 #include "Prop.h"
 #include "Attack.h"
+#include "readyGo.h"
+#include "timeOver.h"
+#include "pauseUI.h"
 
 using namespace cocostudio;
 
@@ -68,33 +69,6 @@ match::~match()
     CC_SAFE_RELEASE_NULL(_pPet);
 }
 
-void match::update(float delta)
-{
-    _updateBarTime += delta;
-    if(_updateBarTime >= 1.0)
-    {
-        _updateBarTime = 0.0f;
-        _timeBarPercent -= 1.0f*100/60;
-        _timeBarLabelNum -= 1;
-        
-        auto back = (Sprite*)this->getChildByTag(kTimerBar);
-        auto loadingbar = (LoadingBar*)back->getChildByTag(0);
-        auto label = (Label*)back->getChildByTag(1);
-        
-        char buf[10];
-        sprintf(buf, "%d\n", _timeBarLabelNum);
-        label->setString(buf);
-        loadingbar->setPercent(_timeBarPercent);
-        
-        if(_timeBarLabelNum <= 0)
-        {
-            unscheduleUpdate();
-            _pCoreMatch->playClearAccount();
-            //popupLayer();
-        }
-    }
-}
-
 bool match::init()
 {
     //1.super init first
@@ -105,8 +79,59 @@ bool match::init()
     
     auto s = Director::getInstance()->getWinSize();
     
+    //auto go = readyGo::create();
+    //addChild(go,2);
+    
     _pCoreMatch = new coreMatch();
     _pCoreMatch->init();
+    addChild(_pCoreMatch,1);
+    
+    //碰撞检测回调
+    auto contactListener = EventListenerPhysicsContact::create();
+    contactListener->onContactBegin = CC_CALLBACK_2(match::onContactBegin, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
+    
+    //set up back ground
+    
+    ImageView* bkground = ImageView::create();
+    bkground->setScale9Enabled(true);
+    bkground->loadTexture("UI/beijing-s9.png");
+    bkground->setSize(Size(s.width, s.height));
+    bkground->setPosition(Point(s.width/2,s.height/2));
+    this->addChild(bkground);
+
+    
+    setupTimerProgress();
+    //setupEnergyProgress();
+    
+    // Add the alert
+    gui::Text* alert = gui::Text::create();
+    alert->setText("pause");
+    alert->setFontName("Marker Felt");
+    alert->setFontSize(30);
+
+    
+    const char* normal = "UI/normal.png";
+    const char* pressed = "UI/press.png";
+    // Create the button
+    Button* button = Button::create();
+    button->setTouchEnabled(true);
+    // open scale9 render
+    button->setScale9Enabled(true);
+    button->loadTextures(normal, pressed, "");
+    button->setSize(Size(button->getContentSize().width, button->getContentSize().height));
+    button->setPosition(Point(s.width - button->getContentSize().width/2-10, s.height - button->getContentSize().height/2-10));
+    button->addTouchEventListener(this, toucheventselector(match::pauseButtonEvent));
+    button->addChild(alert);
+    this->addChild(button);
+    
+    // Create the imageview
+    ImageView* imageView = ImageView::create();
+    imageView->setScale9Enabled(true);
+    imageView->loadTexture("UI/dipang.png");
+    imageView->setSize(Size(s.width, 170));
+    imageView->setPosition(Point(s.width/2, button->getPosition().y-button->getSize().height/2-imageView->getSize().height/2-5));
+    addChild(imageView);
     
     _pMonster = new monster();
     _pMonster->init();
@@ -114,28 +139,22 @@ bool match::init()
     _pPet = new Pet;
     _pPet->init();
     
-    addChild(_pCoreMatch,1);
-    addChild(_pMonster);
-    addChild(_pPet);
-    
+    addChild(_pMonster,0);
+    addChild(_pPet,0);
     _pCoreMatch->setmonster_Pos(_pMonster->getmonster_pos());
-    //碰撞检测回调
-    auto contactListener = EventListenerPhysicsContact::create();
-    contactListener->onContactBegin = CC_CALLBACK_2(match::onContactBegin, this);
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
     
     scheduleUpdate();
-     
-    //set up back ground
-    auto bkground = Sprite::create("UI/ui2_r3_c1.png");
-    addChild(bkground,-1,kFirstBack);
-    bkground->setPosition(Point(s.width/2,s.height/2));
     
-    setupPauseButton();
+    /*
+    auto delay = DelayTime::create(4.0f);
+    auto callfunc = CallFunc::create(
+                               // lambda
+                               [&](){
+                                   scheduleUpdate();
+                               });
+    auto seq = Sequence::create(delay,callfunc,NULL);
+    this->runAction(seq);(*/
     
-    setupTimerProgress();
-    setupEnergyProgress();
-
     return true;
 }
 
@@ -170,9 +189,9 @@ void match::onTouchMoved(Touch* touch, Event* event)
 void match::onTouchEnded(Touch* touch, Event* event)
 {
     _pCoreMatch->onTouch(touch);
-    /*auto emitter = ParticleSystemQuad::create("effect/henxiang_baozha.plist");
-    addChild(emitter);
-    emitter->setPosition(touch->getLocation());*/
+    //auto emitter = ParticleSystemQuad::create("effect/baoxiang.plist");
+    //addChild(emitter);
+    //emitter->setPosition(touch->getLocation());
     return;
 }
 
@@ -188,23 +207,27 @@ bool match::onContactBegin(EventCustom *event, const PhysicsContact& contact)
         Attack* attack = (Attack*)b1->getNode();
         attack->killMe();
         
-        this->addEneryBar(2);
+        //this->addEneryBar(2);
     }
     return true;
+}
+
+void match::continueFromPause()
+{
 }
 
 void match::setupTimerProgress()
 {
     auto s = Director::getInstance()->getWinSize();
-    auto back = Sprite::create("UI/bar_bk.png");
+    auto back = Sprite::create("UI/tuijintiao1.png");
     addChild(back,0,kTimerBar);
     
-    auto xx = Sprite::create("UI/ui2_r25_c1.png");
+    auto xx = Sprite::create("UI/tuijintiao1.png");
     back->setPosition(Point(s.width/2, xx->getContentSize().height/2));
     //loading bar
     LoadingBar* loadingBar = LoadingBar::create();
     loadingBar->setTag(0);
-    loadingBar->loadTexture("UI/bar.png");
+    loadingBar->loadTexture("UI/tuijintiao2.png");
     loadingBar->setDirection(LoadingBarTypeLeft);
     loadingBar->setPercent(_timeBarPercent);
     back->addChild(loadingBar,0,0);
@@ -226,16 +249,16 @@ void match::setupTimerProgress()
 void match::setupEnergyProgress()
 {
     auto s = Director::getInstance()->getWinSize();
-    auto back = Sprite::create("UI/bar_bk.png");
+    auto back = Sprite::create("UI/tuijintiao1.png");
     addChild(back,0,kEnergyBar);
     
-    auto xx = Sprite::create("UI/ui2_r25_c1.png");
+    auto xx = Sprite::create("UI/tuijintiao1.png");
     back->setPosition(Point(s.width/2, s.height-xx->getContentSize().height/2));
     
     //loading bar
     LoadingBar* loadingBar = LoadingBar::create();
     loadingBar->setTag(0);
-    loadingBar->loadTexture("UI/bar.png");
+    loadingBar->loadTexture("UI/tuijintiao2.png");
     loadingBar->setDirection(LoadingBarTypeLeft);
     loadingBar->setPercent(_energyBarPercent);
     back->addChild(loadingBar,0,0);
@@ -252,43 +275,6 @@ void match::setupEnergyProgress()
     char buf[10];
     sprintf(buf, "%d\n", _energyBarLabelNum);
     label->setString(buf);
-}
-
-void match::popupLayer()
-{
-    //定义一个弹出层，传入一张背景图
-    PopupLayer* pl = PopupLayer::create("btn0.png");
-    //ContentSize 是可选的设置，可以不设置，如果设置把它当作 9 图缩放
-    pl->setContentSize(Size(400, 350));
-    pl->setTitle("时间到了");
-    pl->setContentText("时间到啦", 20, 60, 250);
-    //设置回调函数，回调传回一个 CCNode 以获取 tag 判断点击的按钮
-    //这只是作为一种封装实现，如果使用 delegate 那就能够更灵活的控制参数了
-    pl->setCallbackFunc(this, callfuncN_selector(match::buttonCallback));
-    //添加按钮，设置图片，文字，tag 信息
-    pl->addButton("icon.png", "icon.png", "确定", 0);
-    //pl->addButton("popuplayer/pop_button.png", "popuplayer/pop_button.png", "取消", 1);
-    //添加到当前层
-    this->addChild(pl,100);
-}
-
-void match::setupPauseButton()
-{
-    /*
-    const char *normal = "CloseNormal.png";
-    const char* pressed = "circle.png";
-    
-    Button* button = Button::create();
-    button->setTouchEnabled(true);
-    button->loadTextures(normal, pressed, "");
-
-    auto s = Director::getInstance()->getWinSize();
-    this->addChild(button);
-    button->setPosition(Point(s.width - button->getContentSize().width,
-                              s.height- button->getContentSize().height));
-    
-    button->addTouchEventListener(this, toucheventselector(match::pauseButtonEvent));*/
-    return;
 }
 
 void match::addEneryBar(int percent)
@@ -322,25 +308,59 @@ void match::addEneryBar(int percent)
 
 void match::buttonCallback(cocos2d::Node *pNode)
 {
-    CCLOG("button call back. tag: %d", pNode->getTag());
-    float duration = 0.5f;
-    auto mainScene = mainEnter::createScene();
-    auto scene = TransitionFade::create(duration, mainScene, Color3B::WHITE);
-    if (scene)
-    {
-        Director::getInstance()->replaceScene(scene);
-    }
+    _pCoreMatch->playClearAccount();
 }
 
 void match::pauseButtonEvent(cocos2d::Object *pSender, TouchEventType type)
 {
-    float duration = 0.5f;
-    auto pauseScene = PauseLayer::scene();
-    auto scene = TransitionFade::create(duration, pauseScene, Color3B::WHITE);
-    if (scene)
+    pauseUI *pret = pauseUI::create();
+    addChild(pret,10);
+    unscheduleUpdate();
+}
+
+void match::update(float delta)
+{
+    _updateBarTime += delta;
+    if(_updateBarTime >= 1.0)
     {
-        Director::getInstance()->replaceScene(scene);
+        _updateBarTime = 0.0f;
+        _timeBarPercent -= 1.0f*100/60;
+        _timeBarLabelNum -= 1;
+        
+        auto back = (Sprite*)this->getChildByTag(kTimerBar);
+        auto loadingbar = (LoadingBar*)back->getChildByTag(0);
+        auto label = (Label*)back->getChildByTag(1);
+        
+        char buf[10];
+        sprintf(buf, "%d\n", _timeBarLabelNum);
+        label->setString(buf);
+        loadingbar->setPercent(_timeBarPercent);
+        
+        if(_timeBarLabelNum <= 0)
+        {
+            unscheduleUpdate();
+            
+            auto a1 = CallFunc::create(
+                             // lambda
+                             [&](){
+                                 //定义一个弹出层，传入一张背景图
+                                 auto over = timeOver::create();
+                                 this->addChild(over,100);
+                                 _pCoreMatch->playBoxesSmile();
+                             });
+            
+            auto a2 =CallFunc::create(
+                                      // lambda
+                                      [&](){
+                                          _pCoreMatch->playClearAccount();
+                                      });
+            
+            auto seq  = Sequence::create(a1, DelayTime::create(4.0f), a2, NULL);
+            this->runAction(seq);
+        }
     }
 }
+
+
 
 

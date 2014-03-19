@@ -1,8 +1,13 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
 #include "physicScene.h"
+#include "Logo.h"
 #include "match.h"
-#include "mainEnter.h"
+#include "mainUI.h"
+#include "monsterAtlas.h"
+#include "BOXUI.h"
+#include "setUI.h"
+#include "accountUI.h"
 
 USING_NS_CC;
 
@@ -28,18 +33,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
     director->setAnimationInterval(1.0 / 60);
     
     // create a scene. it's an autorelease object
-    auto scene = mainEnter::createScene();
-
-    // run
+    auto scene = match::createScene();
+    
+    //run
     director->runWithScene(scene);
-
     return true;
 }
 
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
-
     // if you use SimpleAudioEngine, it must be pause
     // SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
@@ -47,7 +50,7 @@ void AppDelegate::applicationDidEnterBackground() {
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
-
+    
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 }

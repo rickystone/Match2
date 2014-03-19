@@ -529,7 +529,6 @@ void matchAlgorithm::computerAttackCoords(const std::vector<coord>& inputVecs, s
     }
 }
 
-
 void matchAlgorithm::playClearAccount(const colorSpriteEnum rc[ROW][COL],
                                       std::vector<boxInfo>& propVecs,
                                       std::vector<coord>& randomVecs)
@@ -620,8 +619,136 @@ void matchAlgorithm::playClearAccount(const colorSpriteEnum rc[ROW][COL],
     randomVecs.push_back(coord(r3,c3));
     randomVecs.push_back(coord(r4,c4));
     randomVecs.push_back(coord(r5,c5));
-    
 }
+
+void matchAlgorithm::playAllBoxSimle(const colorSpriteEnum rc[ROW][COL], Sprite* rcSprites[ROW][COL])
+{
+    for(int r=0; r<ROW; r++){
+        for(int c=0; c<COL; c++){
+            auto sp = rcSprites[r][c];
+            if(sp)
+            {
+                std::string s_open = "", s_close = "";
+                colorSpriteEnum cs = rc[r][c];
+                
+                if(cs == kPropAutoClear ||
+                   cs == kPropBoomb ||
+                   cs == kPropCorssBoomb ||
+                   cs == kPropFivePlaces ||
+                   cs == kPropRandomBoom ||
+                   cs == kPropSameColorBoomb)
+                   continue;
+                
+                switch (cs) {
+                    case kA:
+                    s_open = "s_fanqie.png";
+                    s_close = "s_fanqie_b.png";
+                    break;
+                    
+                    case kB:
+                    s_open = "s_lanmei.png";
+                    s_close = "s_lanmei_b.png";
+                    break;
+                    
+                    case kC:
+                    s_open = "s_qiezi.png";
+                    s_close = "s_qiezi_b.png";
+                    break;
+                    
+                    case kD:
+                    s_open = "s_tudou.png";
+                    s_close = "s_tudou_b.png";
+                    break;
+                    
+                    case kE:
+                    s_open = "s_xigua.png";
+                    s_close = "s_xigua_b.png";
+                    break;
+                    
+                    default:
+                    break;
+                }
+                
+                //auto sprite = Sprite::createWithSpriteFrameName(s_open.c_str());
+                Animation* animation = Animation::create();
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_close));
+                animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(s_open));
+                
+                //should last 2.8 seconds. And there are 14 frames.
+                animation->setDelayPerUnit(0.8f/6.0);
+                animation->setRestoreOriginalFrame(true);
+                Animate* action = Animate::create(animation);
+                sp->stopAllActions();
+                sp->runAction(RepeatForever::create(action));
+            }
+        }
+    }
+    return;
+}
+
+void matchAlgorithm::stopBoxesSmile(const colorSpriteEnum rc[ROW][COL], Sprite* rcSprites[ROW][COL])
+{
+    for(int r=0; r<ROW; r++)
+    {
+        for(int c=0; c<COL; c++)
+        {
+            auto sp = rcSprites[r][c];
+            if(sp)
+            {
+                sp->stopAllActions();
+                
+                
+                colorSpriteEnum cs = rc[r][c];
+                
+                if(cs == kPropAutoClear ||
+                   cs == kPropBoomb ||
+                   cs == kPropCorssBoomb ||
+                   cs == kPropFivePlaces ||
+                   cs == kPropRandomBoom ||
+                   cs == kPropSameColorBoomb)
+                continue;
+                
+                const char* s_open  = "";
+                const char* s_close = "";
+                switch (cs) {
+                    case kA:
+                    s_open = "s_fanqie.png";
+                    s_close = "s_fanqie_b.png";
+                    break;
+                    
+                    case kB:
+                    s_open = "s_lanmei.png";
+                    s_close = "s_lanmei_b.png";
+                    break;
+                    
+                    case kC:
+                    s_open = "s_qiezi.png";
+                    s_close = "s_qiezi_b.png";
+                    break;
+                    
+                    case kD:
+                    s_open = "s_tudou.png";
+                    s_close = "s_tudou_b.png";
+                    break;
+                    
+                    case kE:
+                    s_open = "s_xigua.png";
+                    s_close = "s_xigua_b.png";
+                    break;
+                    
+                    default:
+                    break;
+                }
+                sp->setSpriteFrame(s_close);
+            }
+        }
+    }
+}
+
 
 
 

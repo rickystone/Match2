@@ -60,3 +60,4 @@ Label* AnimationUtil::createLabel(const char* ttf, int fontsize)
     label->setColor(Color3B::WHITE);
     return label;
 }
+

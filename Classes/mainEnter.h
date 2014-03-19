@@ -17,7 +17,6 @@ USING_NS_CC;
 //USING_NS_CC;
 using namespace gui;
 
-
 class mainEnter :  public cocos2d::Layer
 {
 public:
@@ -31,8 +30,9 @@ public:
     
 private:
     
-    void previousCallback(Object* sender, TouchEventType type);
+    void setupJson();
     
+    void previousCallback(Object* sender, TouchEventType type);
     void setupBackGround();
     void setupButton();
     void touchEvent(Object *pSender, TouchEventType type);
@@ -40,3 +40,7 @@ private:
 };
 
 #endif
+
+
+
+

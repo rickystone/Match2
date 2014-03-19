@@ -59,6 +59,9 @@ public:
                                  std::vector<boxInfo>& propVecs,
                                  std::vector<coord>& randomVecs);
     
+    static void playAllBoxSimle(const colorSpriteEnum rc[ROW][COL], Sprite* rcSprites[ROW][COL]);
+    static void stopBoxesSmile(const colorSpriteEnum rc[ROW][COL], Sprite* rcSprites[ROW][COL]);
+        
 private:
     static void processRC(const colorSpriteEnum _rc[ROW][COL], std::queue<coord>& queues, std::vector<coord>& collection,
                    colorSpriteEnum curKc, int r, int c);

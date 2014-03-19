@@ -28,7 +28,9 @@ Attack* Attack::create()
 
 void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
 {
-    auto sprite = Sprite::create("animation/energy_ball01.png");
+    auto sprite = Sprite::createWithSpriteFrameName("zidan.png");
+    
+    /*auto sprite = Sprite::create("animation/energy_ball01.png");
     Animation* animation = Animation::create();
     for(int i=1;i<=4;i++)
     {
@@ -40,19 +42,13 @@ void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
     animation->setDelayPerUnit(0.08);
     animation->setRestoreOriginalFrame(true);
     Animate* action = Animate::create(animation);
-    sprite->runAction(RepeatForever::create(action));
+    sprite->runAction(RepeatForever::create(action));*/
     
-    auto body = PhysicsBody::createCircle(sprite->getContentSize().width/2);
-    body->setCategoryBitmask(0x04);
-    body->setCollisionBitmask(0x04);
-    body->setGroup(10);
-    body->setRotationEnable(true);
-    sprite->setPhysicsBody(body);
     
-    float speed = 300;
+    float speed = 250;
     float distance = startPoint.getDistance(destination);
     float duration = distance/speed;
-
+    
     /*ccBezierConfig bezier;
     bezier.controlPoint_1 = startPoint;
     bezier.endPosition = destination;
@@ -62,12 +58,13 @@ void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
     sprite->setScale(0.01f);
     auto scaleto = ScaleTo::create(BOXSCALEDURATION, 1.0f);
     auto moveto = MoveTo::create(duration, destination);
-    auto removeSelf = RemoveSelf::create();
     
-    auto rotate = RotateBy::create(1.0, 360);
+    auto rotate = RotateBy::create(5.0, 360);
     sprite->runAction(RepeatForever::create(rotate));
     
-    auto seq = Sequence::create(scaleto,moveto,NULL);
+    auto call = CallFunc::create( CC_CALLBACK_0(Attack::callback2,this,sprite));
+    
+    auto seq = Sequence::create(scaleto,moveto, call, RemoveSelf::create(), NULL);
     sprite->runAction(seq);
     this->addChild(sprite);
     sprite->setPosition(startPoint);
@@ -76,7 +73,44 @@ void Attack::shootBullet(int r, int c, Point destination, Point startPoint)
 void Attack::killMe()
 {
     CCLOG("attack kill me");
-    auto delay = DelayTime::create(1.5);
-    auto seq = Sequence::create(delay, RemoveSelf::create(), NULL);
+}
+
+void Attack::callback2(Node* sender)
+{
+    Sprite* xx = (Sprite*)sender;
+    Point pt = xx->getPosition();
+    
+    Sprite* sprite = Sprite::createWithSpriteFrameName("zidan.png");
+    auto body = PhysicsBody::createCircle(sprite->getContentSize().width/2);
+    body->setCategoryBitmask(0x04);
+    body->setCollisionBitmask(0x04);
+    body->setGroup(10);
+    sprite->setPhysicsBody(body);
+    sprite->setPosition(pt);
+    sprite->setRotation(xx->getRotation());
+    addChild(sprite,0,10);
+    
+    auto seq = Sequence::create(DelayTime::create(0.5f), CallFunc::create( std::bind(&Attack::fuckxx, this, sprite)),
+                                DelayTime::create(1.0f),
+                                RemoveSelf::create(),
+                                NULL);
     this->runAction(seq);
 }
+
+
+void Attack::fuckxx(Sprite* xx)
+{
+    PhysicsBody* body = xx->getPhysicsBody();
+    body->removeFromWorld();
+    
+    auto rotate = RotateBy::create(4.0, 360);
+    auto repeat = RepeatForever::create(rotate);
+    
+    auto moveby = MoveBy::create(1.0f, Point(0,-30));
+    
+    xx->runAction(repeat);
+    xx->runAction(moveby);
+
+}
+
+

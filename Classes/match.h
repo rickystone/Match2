@@ -46,22 +46,21 @@ public:
     
     void setPhyWorld(PhysicsWorld* world){m_world = world;}
     
+    void continueFromPause();
     
 private:
     
     void setupTimerProgress();
     void setupEnergyProgress();
-    void setupPauseButton();
     
     void update(float delta);
     void buttonCallback(cocos2d::Node *pNode);
-    void popupLayer();
 
     void addEneryBar(int percent);
     
     //pause button touch event
     void pauseButtonEvent(cocos2d::Object *pSender, TouchEventType type);
-    
+        
 private:
     PhysicsWorld* m_world;
     bool onContactBegin(EventCustom* event, const PhysicsContact& contact);

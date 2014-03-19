@@ -23,6 +23,9 @@ public:
     
     void shootBullet(int r, int c,  Point destinationk, Point startPoint);
     void killMe();
+    void callback2(Node* sender);
+    
+    void fuckxx(Sprite* xx);
 };
 
 #endif
